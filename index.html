@@ -1,619 +1,2269 @@
+```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบสั่งสกรีนเสื้อคัสตอม</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        
-        /* Tab Navigation */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
-        .tab { padding: 10px 20px; cursor: pointer; border-radius: 6px; font-weight: 600; color: #4b5563; transition: all 0.2s; }
-        .tab:hover { background: #f3f4f6; }
-        .tab.active { background: #3b82f6; color: white; }
-        
-        .section { display: none; }
-        .section.active { display: block; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบสั่งสกรีนเสื้อคัสตอม</title>
 
-        /* Points Display Header */
-        .points-badge { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 8px 16px; border-radius: 20px; font-size: 0.95rem; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
-        
-        /* T-Shirt Preview Box */
-        .preview-box { position: relative; width: 100%; max-width: 320px; height: 350px; margin: 0 auto 20px; background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .shirt-base { width: 260px; height: auto; transition: fill 0.3s ease; }
-        .design-overlay { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); max-width: 120px; max-height: 140px; object-fit: contain; pointer-events: none; transition: all 0.2s ease; }
-        
-        /* Form Controls */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.95rem; }
-        .color-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; }
-        .color-btn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #d1d5db; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
-        .color-btn:hover { transform: scale(1.1); }
-        .color-btn.selected { border-color: #3b82f6; transform: scale(1.15); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4); }
-        
-        input[type="text"], input[type="number"], input[type="file"], textarea, select { width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-        
-        /* Range Slider Controls */
-        .control-row { display: flex; gap: 15px; align-items: center; margin-top: 8px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .control-row label { margin-bottom: 0; font-size: 0.85rem; }
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* Buttons */
-        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem; width: 100%; transition: background-color 0.2s; }
-        .btn-primary { background: #3b82f6; color: white; }
-        .btn-primary:hover { background: #2563eb; }
-        .btn-success { background: #16a34a; color: white; }
-        .btn-success:hover { background: #15803d; }
-        
-        /* Cart & Summary */
-        .cart-item, .order-card { background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
-        .summary-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 20px; border-radius: 10px; margin-top: 20px; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #374151; font-size: 0.95rem; }
-        .total-row { font-size: 1.25rem; font-weight: bold; color: #1e3a8a; border-top: 2px solid #bfdbfe; padding-top: 12px; margin-top: 10px; }
-        
-        /* QR Code Container */
-        .qr-container { text-align: center; background: white; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 15px; display: none; }
-        .qr-container img { max-width: 200px; height: auto; border-radius: 4px; }
-        
-        /* Status List */
-        .order-card { flex-direction: column; align-items: flex-start; }
-        .order-header { width: 100%; display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-bottom: 8px; font-size: 0.9rem; }
-    </style>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f3f4f6;
+    margin: 0;
+    padding: 20px;
+    color: #374151;
+}
+
+.container {
+    max-width: 850px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+/* =========================
+   TAB
+========================= */
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 10px;
+    overflow-x: auto;
+}
+
+.tab {
+    padding: 10px 18px;
+    cursor: pointer;
+    border-radius: 7px;
+    font-weight: 600;
+    color: #4b5563;
+    transition: all .2s;
+    white-space: nowrap;
+}
+
+.tab:hover {
+    background: #f3f4f6;
+}
+
+.tab.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+/* =========================
+   POINTS
+========================= */
+
+.points-badge {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    padding: 9px 16px;
+    border-radius: 20px;
+    font-size: .95rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+/* =========================
+   SHIRT PREVIEW
+========================= */
+
+.preview-box {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    height: 390px;
+    margin: 0 auto 22px;
+    background:
+        linear-gradient(45deg,#f8fafc 25%,transparent 25%),
+        linear-gradient(-45deg,#f8fafc 25%,transparent 25%),
+        linear-gradient(45deg,transparent 75%,#f8fafc 75%),
+        linear-gradient(-45deg,transparent 75%,#f8fafc 75%);
+    background-size: 20px 20px;
+    background-position: 0 0,0 10px,10px -10px,-10px 0;
+    border: 2px dashed #d1d5db;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.shirt-base {
+    width: 300px;
+    height: auto;
+    transition: fill .3s ease;
+    filter: drop-shadow(0 8px 8px rgba(0,0,0,.12));
+}
+
+.design-overlay {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 125px;
+    height: 145px;
+    object-fit: contain;
+    pointer-events: none;
+    z-index: 3;
+    display: none;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,.15));
+}
+
+.preview-label {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,.9);
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: .78rem;
+    z-index: 5;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+    font-size: .95rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: .95rem;
+    font-family: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+
+/* =========================
+   COLORS
+========================= */
+
+.color-options {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.color-wrapper {
+    text-align: center;
+    width: 50px;
+}
+
+.color-btn {
+    width: 34px;
+    height: 34px;
+    margin: auto;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+}
+
+.color-btn.selected {
+    border-color: #2563eb;
+    transform: scale(1.15);
+    box-shadow:
+        0 0 0 2px rgba(59,130,246,.3),
+        0 2px 5px rgba(0,0,0,.15);
+}
+
+.color-name {
+    font-size: .65rem;
+    margin-top: 5px;
+    color: #64748b;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    width: 100%;
+    transition: .2s;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+}
+
+.btn-success {
+    background: #16a34a;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #15803d;
+}
+
+/* =========================
+   CART
+========================= */
+
+.cart-item,
+.order-card {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.summary-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #374151;
+    font-size: .95rem;
+}
+
+.total-row {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1e3a8a;
+    border-top: 2px solid #bfdbfe;
+    padding-top: 12px;
+    margin-top: 10px;
+}
+
+/* =========================
+   QR
+========================= */
+
+.qr-container {
+    text-align: center;
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    margin-top: 15px;
+    display: none;
+}
+
+.qr-container img {
+    max-width: 230px;
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.payment-note {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    padding: 12px;
+    border-radius: 7px;
+    font-size: .85rem;
+    margin-top: 10px;
+}
+
+/* =========================
+   ORDER
+========================= */
+
+.order-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.order-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    font-size: .9rem;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px) {
+
+    body {
+        padding: 8px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .preview-box {
+        height: 350px;
+    }
+
+    .shirt-base {
+        width: 270px;
+    }
+
+    .cart-item {
+        align-items: flex-start;
+    }
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <!-- Tap เมนูหลัก -->
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab(event, 'shop')"><i class="fa-solid fa-shirt"></i> ออกแบบ & สั่งซื้อ</div>
-        <div class="tab" onclick="switchTab(event, 'cart')"><i class="fa-solid fa-cart-shopping"></i> ตะกร้าสินค้า <span id="cart-badge">(0)</span></div>
-        <div class="tab" onclick="switchTab(event, 'status')"><i class="fa-solid fa-truck-fast"></i> ติดตามคำสั่งซื้อ</div>
+
+<!-- =========================
+     TABS
+========================= -->
+
+<div class="tabs">
+
+    <div class="tab active"
+         onclick="switchTab(event,'shop')">
+        <i class="fa-solid fa-shirt"></i>
+        ออกแบบ & สั่งซื้อ
     </div>
 
-    <!-- ส่วนแสดงแต้มสะสม -->
-    <div class="points-badge">
-        <i class="fa-solid fa-coins"></i> แต้มสะสมของคุณ: <span id="user-points-display">100</span> แต้ม (300 บาท = 1 แต้ม)
+    <div class="tab"
+         onclick="switchTab(event,'cart')">
+        <i class="fa-solid fa-cart-shopping"></i>
+        ตะกร้าสินค้า
+        <span id="cart-badge">(0)</span>
     </div>
 
-    <!-- Tab 1: เลือกสี เลือกไฟล์ภาพ พรีวิวสินค้า -->
-    <div id="shop" class="section active">
-        <div class="preview-box">
-            <!-- SVG รูปเสื้อกึ่งเวกเตอร์ ปรับสีได้ผ่าน CSS fill -->
-            <svg class="shirt-base" id="shirt-svg" viewBox="0 0 100 100" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5">
-                <path d="M 30,15 L 40,20 C 45,22 55,22 60,20 L 70,15 L 90,28 L 80,42 L 72,36 L 72,85 L 28,85 L 28,36 L 20,42 L 10,28 Z" />
-            </svg>
-            <img id="design-preview" class="design-overlay" src="" style="display:none;" alt="Design Preview">
+    <div class="tab"
+         onclick="switchTab(event,'status')">
+        <i class="fa-solid fa-truck-fast"></i>
+        ติดตามคำสั่งซื้อ
+    </div>
+
+</div>
+
+<!-- =========================
+     POINTS
+========================= -->
+
+<div class="points-badge">
+
+    <i class="fa-solid fa-coins"></i>
+
+    แต้มสะสมของคุณ:
+    <span id="user-points-display">100</span>
+    แต้ม
+
+    <span style="font-weight:500;">
+        (ทุกยอดครบ 300 บาท = 1 แต้ม)
+    </span>
+
+</div>
+
+<!-- =====================================================
+     SHOP
+===================================================== -->
+
+<div id="shop" class="section active">
+
+    <div class="preview-box">
+
+        <!-- เสื้อ -->
+        <svg
+            class="shirt-base"
+            id="shirt-svg"
+            viewBox="0 0 100 100"
+            fill="#ffffff"
+            stroke="#94a3b8"
+            stroke-width="1.5">
+
+            <path d="
+                M 30,15
+                L 40,20
+                C 45,22 55,22 60,20
+                L 70,15
+                L 90,28
+                L 80,42
+                L 72,36
+                L 72,85
+                L 28,85
+                L 28,36
+                L 20,42
+                L 10,28
+                Z
+            "/>
+
+        </svg>
+
+        <!-- รูปสกรีน -->
+        <img
+            id="design-preview"
+            class="design-overlay"
+            src=""
+            alt="ตัวอย่างลายสกรีน">
+
+        <div class="preview-label">
+            ตัวอย่างสินค้าจริง
         </div>
 
-        <div class="form-group">
-            <label><i class="fa-solid fa-upload"></i> 1. อัปโหลดลายสกรีน (แนะนำไฟล์ PNG พื้นหลังใส)</label>
-            <input type="file" id="image-upload" accept="image/*" onchange="previewImage(event)">
-            
-            <!-- ปรับตำแหน่งและขนาดลายสกรีน -->
-            <div id="design-controls" style="display: none; margin-top: 10px;">
-                <div class="control-row">
-                    <label>ปรับขนาดลาย:</label>
-                    <input type="range" id="scale-slider" min="40" max="150" value="100" oninput="adjustDesign()">
+    </div>
+
+    <!-- =========================
+         UPLOAD
+    ========================= -->
+
+    <div class="form-group">
+
+        <label>
+            <i class="fa-solid fa-upload"></i>
+            1. อัปโหลดลายสกรีน
+        </label>
+
+        <input
+            type="file"
+            id="image-upload"
+            accept="image/*"
+            onchange="previewImage(event)">
+
+        <div style="font-size:.8rem;color:#64748b;margin-top:6px;">
+            แนะนำ PNG พื้นหลังใส เพื่อให้ลายสกรีนสวยที่สุด
+        </div>
+
+    </div>
+
+    <!-- =========================
+         COLORS
+    ========================= -->
+
+    <div class="form-group">
+
+        <label>
+            <i class="fa-solid fa-palette"></i>
+            2. เลือกสีเสื้อ
+        </label>
+
+        <div class="color-options">
+
+            <div class="color-wrapper">
+                <div class="color-btn selected"
+                     style="background:#ffffff"
+                     title="ขาว"
+                     onclick="selectColor('#ffffff','ขาว',this)">
                 </div>
-                <div class="control-row">
-                    <label>ปรับตำแหน่ง (ขึ้น-ลง):</label>
-                    <input type="range" id="position-slider" min="30" max="65" value="45" oninput="adjustDesign()">
+                <div class="color-name">ขาว</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#000000"
+                     onclick="selectColor('#000000','ดำ',this)">
                 </div>
+                <div class="color-name">ดำ</div>
             </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#1f2937"
+                     onclick="selectColor('#1f2937','ดำเข้ม',this)">
+                </div>
+                <div class="color-name">ดำเข้ม</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#6b7280"
+                     onclick="selectColor('#6b7280','เทา',this)">
+                </div>
+                <div class="color-name">เทา</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#d1d5db"
+                     onclick="selectColor('#d1d5db','เทาอ่อน',this)">
+                </div>
+                <div class="color-name">เทาอ่อน</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#dc2626"
+                     onclick="selectColor('#dc2626','แดง',this)">
+                </div>
+                <div class="color-name">แดง</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#f97316"
+                     onclick="selectColor('#f97316','ส้ม',this)">
+                </div>
+                <div class="color-name">ส้ม</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#f59e0b"
+                     onclick="selectColor('#f59e0b','เหลือง',this)">
+                </div>
+                <div class="color-name">เหลือง</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#16a34a"
+                     onclick="selectColor('#16a34a','เขียว',this)">
+                </div>
+                <div class="color-name">เขียว</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#22c55e"
+                     onclick="selectColor('#22c55e','เขียวสด',this)">
+                </div>
+                <div class="color-name">เขียวสด</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#0ea5e9"
+                     onclick="selectColor('#0ea5e9','ฟ้า',this)">
+                </div>
+                <div class="color-name">ฟ้า</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#2563eb"
+                     onclick="selectColor('#2563eb','น้ำเงิน',this)">
+                </div>
+                <div class="color-name">น้ำเงิน</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#1d4ed8"
+                     onclick="selectColor('#1d4ed8','น้ำเงินเข้ม',this)">
+                </div>
+                <div class="color-name">น้ำเงินเข้ม</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#7c3aed"
+                     onclick="selectColor('#7c3aed','ม่วง',this)">
+                </div>
+                <div class="color-name">ม่วง</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#ec4899"
+                     onclick="selectColor('#ec4899','ชมพู',this)">
+                </div>
+                <div class="color-name">ชมพู</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#f9a8d4"
+                     onclick="selectColor('#f9a8d4','ชมพูอ่อน',this)">
+                </div>
+                <div class="color-name">ชมพูอ่อน</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#92400e"
+                     onclick="selectColor('#92400e','น้ำตาล',this)">
+                </div>
+                <div class="color-name">น้ำตาล</div>
+            </div>
+
+            <div class="color-wrapper">
+                <div class="color-btn"
+                     style="background:#f5f5dc"
+                     onclick="selectColor('#f5f5dc','ครีม',this)">
+                </div>
+                <div class="color-name">ครีม</div>
+            </div>
+
         </div>
 
-        <div class="form-group">
-            <label><i class="fa-solid fa-palette"></i> 2. เลือกสีเสื้อ (เพิ่มโทนสีหลากสไตล์)</label>
-            <div class="color-options">
-                <div class="color-btn selected" style="background: #ffffff;" title="ขาว" onclick="selectColor('#ffffff', 'ขาว', this)"></div>
-                <div class="color-btn" style="background: #111827;" title="ดำ" onclick="selectColor('#111827', 'ดำ', this)"></div>
-                <div class="color-btn" style="background: #ef4444;" title="แดง" onclick="selectColor('#ef4444', 'แดง', this)"></div>
-                <div class="color-btn" style="background: #3b82f6;" title="น้ำเงิน" onclick="selectColor('#3b82f6', 'น้ำเงิน', this)"></div>
-                <div class="color-btn" style="background: #10b981;" title="เขียว" onclick="selectColor('#10b981', 'เขียว', this)"></div>
-                <div class="color-btn" style="background: #f59e0b;" title="เหลือง" onclick="selectColor('#f59e0b', 'เหลือง', this)"></div>
-                <div class="color-btn" style="background: #ec4899;" title="ชมพู" onclick="selectColor('#ec4899', 'ชมพู', this)"></div>
-                <div class="color-btn" style="background: #6b7280;" title="เทา" onclick="selectColor('#6b7280', 'เทา', this)"></div>
-                <!-- สีเพิ่มเติม -->
-                <div class="color-btn" style="background: #f97316;" title="ส้ม" onclick="selectColor('#f97316', 'ส้ม', this)"></div>
-                <div class="color-btn" style="background: #a855f7;" title="ม่วง" onclick="selectColor('#a855f7', 'ม่วง', this)"></div>
-                <div class="color-btn" style="background: #06b6d4;" title="ฟ้า" onclick="selectColor('#06b6d4', 'ฟ้า', this)"></div>
-                <div class="color-btn" style="background: #831843;" title="ชมพูเข้ม" onclick="selectColor('#831843', 'ชมพูเข้ม', this)"></div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label><i class="fa-solid fa-ruler-combined"></i> 3. เลือกไซส์ และ จำนวน (ราคาตัวละ 250 บาท)</label>
-            <div style="display: flex; gap: 10px;">
-                <select id="shirt-size" style="flex: 1;">
-                    <option value="S">ไซส์ S (รอบอก 32")</option>
-                    <option value="M" selected>ไซส์ M (รอบอก 36")</option>
-                    <option value="L">ไซส์ L (รอบอก 40")</option>
-                    <option value="XL">ไซส์ XL (รอบอก 44")</option>
-                    <option value="2XL">ไซส์ 2XL (รอบอก 48")</option>
-                </select>
-                <input type="number" id="shirt-qty" value="1" min="1" style="width: 100px;">
-            </div>
-        </div>
-
-        <button class="btn btn-primary" onclick="addToCart()"><i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้าสินค้า</button>
     </div>
 
-    <!-- Tab 2: ตะกร้าสินค้า และ คำนวณเงิน -->
-    <div id="cart" class="section">
-        <div id="cart-items-container"></div>
-        
-        <div id="cart-summary-detail" class="summary-box" style="display:none;">
-            <h3 style="margin-top:0; color:#1e3a8a;"><i class="fa-solid fa-receipt"></i> สรุปรายการและส่วนลด</h3>
-            
-            <!-- ส่วนใส่คูปองส่วนลด -->
-            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 8px;">
-                <input type="text" id="coupon-input" placeholder="กรอกโค้ดส่วนลด (เช่น JY700, JY1000, JY5000)">
-                <button class="btn btn-primary" style="width: auto; padding: 10px 18px;" onclick="applyCoupon()">ใช้โค้ด</button>
-            </div>
-            <div id="coupon-msg" style="font-size: 0.85rem; margin-bottom: 12px; font-weight: 500;"></div>
+    <!-- =========================
+         SIZE
+    ========================= -->
 
-            <!-- ส่วนใช้แต้มสะสม -->
-            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 8px;">
-                <input type="number" id="points-input" placeholder="ระบุจำนวนแต้มที่ใช้ (1 แต้ม = 1 บาท)" min="0">
-                <button class="btn btn-primary" style="width: auto; padding: 10px 18px;" onclick="applyPoints()">ใช้แต้ม</button>
-            </div>
-            <div id="points-msg" style="font-size: 0.85rem; margin-bottom: 15px; font-weight: 500;"></div>
+    <div class="form-group">
 
-            <!-- รายละเอียดสรุปยอดเงิน -->
-            <div class="summary-row"><span>รวมราคาสินค้า:</span> <span id="summary-subtotal">0 บาท</span></div>
-            <div class="summary-row"><span>ส่วนลดโค้ดคูปอง:</span> <span id="summary-discount">-0 บาท</span></div>
-            <div class="summary-row"><span>ส่วนลดจากแต้มสะสม:</span> <span id="summary-points-discount">-0 บาท</span></div>
-            <div class="summary-row"><span>ค่าบริการจัดส่ง:</span> <span id="summary-shipping">20 บาท</span></div>
-            <div class="summary-row total-row"><span>ยอดชำระสุทธิ:</span> <span id="total-price">0 บาท</span></div>
-            
-            <div style="font-size: 0.85rem; color: #16a34a; text-align: right; margin-top: 8px; font-weight: 600;">
-                <i class="fa-solid fa-gift"></i> สั่งซื้อคำสั่งซื้อนี้จะได้รับเพิ่ม: <span id="earn-points">0</span> แต้ม
-            </div>
+        <label>
+            <i class="fa-solid fa-ruler-combined"></i>
+            3. เลือกไซส์ และ จำนวน
+        </label>
 
-            <hr style="border: 0; border-top: 1px solid #bfdbfe; margin: 20px 0;">
+        <div style="display:flex;gap:10px;">
 
-            <!-- ฟอร์มกรอกที่อยู่จัดส่ง -->
-            <h3 style="color:#1e3a8a; margin-bottom: 15px;"><i class="fa-solid fa-truck-ramps"></i> ข้อมูลการจัดส่ง</h3>
-            <div class="form-group">
-                <label>ชื่อ-นามสกุล ผู้รับ *</label>
-                <input type="text" id="ship-name" placeholder="กรุณากรอกชื่อและนามสกุล">
-            </div>
-            <div class="form-group">
-                <label>เบอร์โทรศัพท์ติดต่อ *</label>
-                <input type="text" id="ship-phone" placeholder="เช่น 0812345678">
-            </div>
-            <div class="form-group">
-                <label>ที่อยู่จัดส่งโดยละเอียด *</label>
-                <textarea id="ship-address" rows="3" placeholder="บ้านเลขที่, หมู่บ้าน, ถนน, แขวง/ตำบล, เขต/อำเภอ, จังหวัด, รหัสไปรษณีย์"></textarea>
-            </div>
+            <select id="shirt-size" style="flex:1;">
 
-            <!-- ระบบเลือกวิธีชำระเงิน -->
-            <h3 style="color:#1e3a8a; margin-bottom: 15px;"><i class="fa-solid fa-wallet"></i> วิธีการชำระเงิน</h3>
-            <div class="form-group">
-                <select id="payment-method" onchange="togglePaymentUI()">
-                    <option value="promptpay">สแกนชำระเงินด้วย QR Code (PromptPay)</option>
-                    <option value="cod">ชำระเงินปลายทาง (COD)</option>
-                </select>
-            </div>
+                <option value="S">
+                    ไซส์ S (รอบอก 32")
+                </option>
 
-            <!-- แสดง Dynamic PromptPay QR Code -->
-            <div id="qr-container" class="qr-container">
-                <p style="font-weight: 600; margin-top:0; color:#1e293b;">สแกน QR Code เพื่อชำระเงิน</p>
-                <img id="qr-img" src="" alt="PromptPay QR Code">
-                <p style="font-size: 0.8rem; color: #ef4444; margin-bottom:0; margin-top:8px;">
-                    *ระบบจะสร้าง QR Code ตามยอดเงินสุทธิจริงโดยอัตโนมัติ
-                </p>
-            </div>
+                <option value="M" selected>
+                    ไซส์ M (รอบอก 36")
+                </option>
 
-            <button class="btn btn-success" style="margin-top: 20px;" onclick="checkout()">
-                <i class="fa-solid fa-circle-check"></i> ยืนยันการสั่งซื้อสินค้า
+                <option value="L">
+                    ไซส์ L (รอบอก 40")
+                </option>
+
+                <option value="XL">
+                    ไซส์ XL (รอบอก 44")
+                </option>
+
+                <option value="2XL">
+                    ไซส์ 2XL (รอบอก 48")
+                </option>
+
+                <option value="3XL">
+                    ไซส์ 3XL (รอบอก 52")
+                </option>
+
+                <option value="4XL">
+                    ไซส์ 4XL (รอบอก 56")
+                </option>
+
+            </select>
+
+            <input
+                type="number"
+                id="shirt-qty"
+                value="1"
+                min="1"
+                max="100"
+                style="width:100px;">
+
+        </div>
+
+        <div style="margin-top:7px;font-size:.8rem;color:#64748b;">
+            ราคาปกติ 250 บาท / ตัว
+        </div>
+
+    </div>
+
+    <button
+        class="btn btn-primary"
+        onclick="addToCart()">
+
+        <i class="fa-solid fa-cart-plus"></i>
+        เพิ่มลงตะกร้าสินค้า
+
+    </button>
+
+</div>
+
+<!-- =====================================================
+     CART
+===================================================== -->
+
+<div id="cart" class="section">
+
+    <div id="cart-items-container"></div>
+
+    <div
+        id="cart-summary-detail"
+        class="summary-box"
+        style="display:none;">
+
+        <h3 style="margin-top:0;color:#1e3a8a;">
+            <i class="fa-solid fa-receipt"></i>
+            สรุปรายการและส่วนลด
+        </h3>
+
+        <!-- COUPON -->
+
+        <div class="form-group"
+             style="display:flex;gap:10px;margin-bottom:8px;">
+
+            <input
+                type="text"
+                id="coupon-input"
+                placeholder="โค้ด เช่น JY700, JY1000">
+
+            <button
+                class="btn btn-primary"
+                style="width:auto;padding:10px 18px;"
+                onclick="applyCoupon()">
+
+                ใช้โค้ด
+
             </button>
+
         </div>
+
+        <div
+            id="coupon-msg"
+            style="font-size:.85rem;margin-bottom:12px;font-weight:500;">
+        </div>
+
+        <!-- POINTS -->
+
+        <div class="form-group"
+             style="display:flex;gap:10px;margin-bottom:8px;">
+
+            <input
+                type="number"
+                id="points-input"
+                placeholder="จำนวนแต้มที่ต้องการใช้"
+                min="0">
+
+            <button
+                class="btn btn-primary"
+                style="width:auto;padding:10px 18px;"
+                onclick="applyPoints()">
+
+                ใช้แต้ม
+
+            </button>
+
+        </div>
+
+        <div
+            id="points-msg"
+            style="font-size:.85rem;margin-bottom:15px;font-weight:500;">
+        </div>
+
+        <!-- SUMMARY -->
+
+        <div class="summary-row">
+            <span>รวมราคาสินค้า:</span>
+            <span id="summary-subtotal">0 บาท</span>
+        </div>
+
+        <div class="summary-row">
+            <span>ส่วนลดโค้ดคูปอง:</span>
+            <span id="summary-discount">-0 บาท</span>
+        </div>
+
+        <div class="summary-row">
+            <span>ส่วนลดจากแต้ม:</span>
+            <span id="summary-points-discount">-0 บาท</span>
+        </div>
+
+        <div class="summary-row">
+            <span>ค่าจัดส่ง:</span>
+            <span id="summary-shipping">20 บาท</span>
+        </div>
+
+        <div class="summary-row total-row">
+            <span>ยอดชำระสุทธิ:</span>
+            <span id="total-price">0 บาท</span>
+        </div>
+
+        <div
+            style="
+            font-size:.85rem;
+            color:#16a34a;
+            text-align:right;
+            margin-top:8px;
+            font-weight:600;">
+
+            <i class="fa-solid fa-gift"></i>
+
+            ซื้อครั้งนี้ได้รับ:
+            <span id="earn-points">0</span>
+            แต้ม
+
+        </div>
+
+        <hr style="
+        border:0;
+        border-top:1px solid #bfdbfe;
+        margin:20px 0;">
+
+        <!-- =========================
+             SHIPPING
+        ========================= -->
+
+        <h3 style="color:#1e3a8a;">
+            <i class="fa-solid fa-truck"></i>
+            ข้อมูลการจัดส่ง
+        </h3>
+
+        <div class="form-group">
+
+            <label>
+                ชื่อ-นามสกุล ผู้รับ *
+            </label>
+
+            <input
+                type="text"
+                id="ship-name"
+                placeholder="กรุณากรอกชื่อและนามสกุล">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                เบอร์โทรศัพท์ *
+            </label>
+
+            <input
+                type="text"
+                id="ship-phone"
+                placeholder="เช่น 0812345678">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                ที่อยู่จัดส่ง *
+            </label>
+
+            <textarea
+                id="ship-address"
+                rows="4"
+                placeholder="บ้านเลขที่, หมู่บ้าน, ถนน, แขวง/ตำบล, เขต/อำเภอ, จังหวัด, รหัสไปรษณีย์"></textarea>
+
+        </div>
+
+        <!-- =========================
+             PAYMENT
+        ========================= -->
+
+        <h3 style="color:#1e3a8a;">
+            <i class="fa-solid fa-wallet"></i>
+            วิธีการชำระเงิน
+        </h3>
+
+        <div class="form-group">
+
+            <select
+                id="payment-method"
+                onchange="togglePaymentUI()">
+
+                <option value="promptpay">
+                    สแกนชำระเงินด้วย QR Code (PromptPay)
+                </option>
+
+                <option value="cod">
+                    ชำระเงินปลายทาง (COD)
+                </option>
+
+            </select>
+
+        </div>
+
+        <!-- PROMPTPAY -->
+
+        <div
+            id="qr-container"
+            class="qr-container">
+
+            <p style="
+            font-weight:600;
+            margin-top:0;
+            color:#1e293b;">
+
+                <i class="fa-solid fa-qrcode"></i>
+                สแกน QR Code เพื่อชำระเงิน
+
+            </p>
+
+            <img
+                id="qr-img"
+                src=""
+                alt="PromptPay QR Code">
+
+            <p
+                id="qr-amount"
+                style="
+                font-weight:bold;
+                color:#16a34a;
+                margin:10px 0;">
+
+                ยอดชำระ 0 บาท
+
+            </p>
+
+            <p style="
+            font-size:.8rem;
+            color:#ef4444;
+            margin-bottom:0;">
+
+                * QR Code จะเปลี่ยนตามยอดชำระสุทธิ
+
+            </p>
+
+        </div>
+
+        <!-- COD -->
+
+        <div
+            id="cod-container"
+            class="payment-note"
+            style="display:none;">
+
+            <i class="fa-solid fa-money-bill-wave"></i>
+
+            <strong>ชำระเงินปลายทาง (COD)</strong>
+
+            <br>
+
+            กรุณาเตรียมเงินสดตามยอดชำระ
+            <strong>
+                <span id="cod-total">0</span> บาท
+            </strong>
+            เพื่อชำระกับพนักงานจัดส่ง
+
+        </div>
+
+        <button
+            class="btn btn-success"
+            style="margin-top:20px;"
+            onclick="checkout()">
+
+            <i class="fa-solid fa-circle-check"></i>
+            ยืนยันการสั่งซื้อสินค้า
+
+        </button>
+
     </div>
 
-    <!-- Tab 3: ติดตามสถานะคำสั่งซื้อ -->
-    <div id="status" class="section">
-        <div id="order-status-container"></div>
-    </div>
+</div>
+
+<!-- =====================================================
+     STATUS
+===================================================== -->
+
+<div id="status" class="section">
+
+    <div id="order-status-container"></div>
+
+</div>
+
 </div>
 
 <script>
-    // -----------------------------------------------------------------
-    // ตัวแปรระบบ (Global Variables)
-    // -----------------------------------------------------------------
-    let cart = [];
-    let orders = [];
-    let userPoints = 100; // สมมติแต้มเริ่มต้นของผู้ใช้งานไว้ที่ 100 แต้ม
-    
-    let currentColorHex = '#ffffff';
-    let currentColorName = 'ขาว';
-    let currentDesignSrc = '';
-    
-    let appliedDiscount = 0;
-    let appliedCouponCode = '';
-    let appliedPoints = 0;
 
-    // เริ่มต้นแสดงผลแต้มสะสม
-    document.getElementById('user-points-display').innerText = userPoints;
+/* =====================================================
+   GLOBAL
+===================================================== */
 
-    // -----------------------------------------------------------------
-    // 1. ระบบจัดการ Tab & การเลือกสี/รูปพรีวิว/ปรับแต่งรูป
-    // -----------------------------------------------------------------
-    function switchTab(evt, tabId) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        
-        evt.currentTarget.classList.add('active');
-        document.getElementById(tabId).classList.add('active');
-        
-        if (tabId === 'cart') updateCartUI();
-        if (tabId === 'status') updateOrderStatusUI();
-    }
+let cart =
+    JSON.parse(localStorage.getItem('jy_cart') || '[]');
 
-    function selectColor(hex, name, el) {
-        currentColorHex = hex;
-        currentColorName = name;
-        document.getElementById('shirt-svg').style.fill = hex;
-        
-        document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
-        el.classList.add('selected');
-    }
+let orders =
+    JSON.parse(localStorage.getItem('jy_orders') || '[]');
 
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentDesignSrc = e.target.result;
-                const img = document.getElementById('design-preview');
-                img.src = currentDesignSrc;
-                img.style.display = 'block';
-                document.getElementById('design-controls').style.display = 'block';
-                adjustDesign();
-            }
-            reader.readAsDataURL(file);
-        }
-    }
+let userPoints =
+    parseInt(localStorage.getItem('jy_points') || '100');
 
-    function adjustDesign() {
-        const scale = document.getElementById('scale-slider').value;
-        const posY = document.getElementById('position-slider').value;
-        const img = document.getElementById('design-preview');
-        
-        img.style.width = (110 * (scale / 100)) + 'px';
-        img.style.top = posY + '%';
-    }
+let currentColorHex = '#ffffff';
+let currentColorName = 'ขาว';
 
-    // -----------------------------------------------------------------
-    // 2. ตะกร้าสินค้า
-    // -----------------------------------------------------------------
-    function addToCart() {
-        const size = document.getElementById('shirt-size').value;
-        const qty = parseInt(document.getElementById('shirt-qty').value) || 1;
-        const hasDesign = currentDesignSrc !== '';
-        
-        cart.push({
-            name: `เสื้อยืดสี${currentColorName} ไซส์ ${size} ${hasDesign ? '(พร้อมสกรีนลาย)' : '(เสื้อเปล่า)'}`,
-            price: 250,
-            qty: qty,
-            designImg: currentDesignSrc
-        });
-        
-        document.getElementById('cart-badge').innerText = `(${cart.length})`;
-        alert('เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว!');
-    }
+let appliedDiscount = 0;
+let appliedCouponCode = '';
+let appliedPoints = 0;
 
-    function removeItem(index) {
-        cart.splice(index, 1);
-        document.getElementById('cart-badge').innerText = `(${cart.length})`;
+const PRICE_PER_SHIRT = 250;
+const SHIPPING_FEE = 20;
+
+const PROMPTPAY_NUMBER = '0812345678';
+
+
+/* =====================================================
+   INITIAL
+===================================================== */
+
+document.getElementById('user-points-display').innerText =
+    userPoints;
+
+updateCartBadge();
+
+
+/* =====================================================
+   SAVE
+===================================================== */
+
+function saveData() {
+
+    localStorage.setItem(
+        'jy_cart',
+        JSON.stringify(cart)
+    );
+
+    localStorage.setItem(
+        'jy_orders',
+        JSON.stringify(orders)
+    );
+
+    localStorage.setItem(
+        'jy_points',
+        userPoints
+    );
+}
+
+
+/* =====================================================
+   TAB
+===================================================== */
+
+function switchTab(evt, tabId) {
+
+    document.querySelectorAll('.tab')
+        .forEach(t => t.classList.remove('active'));
+
+    document.querySelectorAll('.section')
+        .forEach(s => s.classList.remove('active'));
+
+    evt.currentTarget.classList.add('active');
+
+    document.getElementById(tabId)
+        .classList.add('active');
+
+    if(tabId === 'cart') {
         updateCartUI();
     }
 
-    // -----------------------------------------------------------------
-    // 3. ระบบคูปองส่วนลด & ระบบสะสมแต้ม
-    // -----------------------------------------------------------------
-    function applyCoupon() {
-        const codeInput = document.getElementById('coupon-input').value.trim().toUpperCase();
-        const msgEl = document.getElementById('coupon-msg');
-        let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    if(tabId === 'status') {
+        updateOrderStatusUI();
+    }
+}
 
-        if (codeInput === 'JY700') {
-            if (subtotal < 700) {
-                appliedDiscount = 0; appliedCouponCode = '';
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'ยอดซื้อขั้นต่ำไม่ถึง 700 บาท (ขาดอีก ' + (700 - subtotal) + ' บาท)';
-            } else {
-                appliedDiscount = 100; appliedCouponCode = 'JY700';
-                msgEl.style.color = '#16a34a';
-                msgEl.innerText = 'ใช้โค้ดลด 100 บาท สำเร็จ!';
-            }
-        } else if (codeInput === 'JY1000') {
-            if (subtotal < 1000) {
-                appliedDiscount = 0; appliedCouponCode = '';
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'ยอดซื้อขั้นต่ำไม่ถึง 1,000 บาท (ขาดอีก ' + (1000 - subtotal) + ' บาท)';
-            } else {
-                appliedDiscount = 150; appliedCouponCode = 'JY1000';
-                msgEl.style.color = '#16a34a';
-                msgEl.innerText = 'ใช้โค้ดลด 150 บาท สำเร็จ!';
-            }
-        } else if (codeInput === 'JY2000') {
-            if (subtotal < 2000) {
-                appliedDiscount = 0; appliedCouponCode = '';
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'ยอดซื้อขั้นต่ำไม่ถึง 2,000 บาท (ขาดอีก ' + (2000 - subtotal) + ' บาท)';
-            } else {
-                appliedDiscount = 300; appliedCouponCode = 'JY2000';
-                msgEl.style.color = '#16a34a';
-                msgEl.innerText = 'ใช้โค้ดลด 300 บาท สำเร็จ!';
-            }
-        } else if (codeInput === 'JY5000') {
-            if (subtotal < 5000) {
-                appliedDiscount = 0; appliedCouponCode = '';
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'ยอดซื้อขั้นต่ำไม่ถึง 5,000 บาท (ยังขาดอีก ' + (5000 - subtotal) + ' บาท)';
-            } else {
-                appliedDiscount = 500; appliedCouponCode = 'JY5000';
-                msgEl.style.color = '#16a34a';
-                msgEl.innerText = 'ใช้โค้ดลด 500 บาท สำเร็จ!';
-            }
-        } else if (codeInput === '') {
-            appliedDiscount = 0; appliedCouponCode = '';
-            msgEl.innerText = '';
-        } else {
-            appliedDiscount = 0; appliedCouponCode = '';
-            msgEl.style.color = '#ef4444';
-            msgEl.innerText = 'โค้ดส่วนลดไม่ถูกต้อง';
-        }
 
-        updateCartUI();
+/* =====================================================
+   COLOR
+===================================================== */
+
+function selectColor(hex, name, el) {
+
+    currentColorHex = hex;
+    currentColorName = name;
+
+    document.getElementById('shirt-svg')
+        .style.fill = hex;
+
+    document.querySelectorAll('.color-btn')
+        .forEach(btn =>
+            btn.classList.remove('selected')
+        );
+
+    el.classList.add('selected');
+}
+
+
+/* =====================================================
+   IMAGE PREVIEW
+===================================================== */
+
+function previewImage(event) {
+
+    const file = event.target.files[0];
+
+    if(!file) return;
+
+    if(!file.type.startsWith('image/')) {
+
+        alert('กรุณาเลือกไฟล์รูปภาพ');
+
+        event.target.value = '';
+
+        return;
     }
 
-    function applyPoints() {
-        const inputPoints = parseInt(document.getElementById('points-input').value) || 0;
-        const msgEl = document.getElementById('points-msg');
-        let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const reader = new FileReader();
 
-        if (inputPoints < 0) {
-            msgEl.style.color = '#ef4444';
-            msgEl.innerText = 'จำนวนแต้มไม่ถูกต้อง';
-            appliedPoints = 0;
-        } else if (inputPoints > userPoints) {
-            msgEl.style.color = '#ef4444';
-            msgEl.innerText = `แต้มของคุณไม่พอ (คุณมี ${userPoints} แต้ม)`;
-            appliedPoints = 0;
-        } else if (inputPoints > subtotal - appliedDiscount) {
-            msgEl.style.color = '#ef4444';
-            msgEl.innerText = 'ใช้แต้มได้สูงสุดไม่เกินยอดซื้อหลังหักส่วนลดโค้ด';
-            appliedPoints = 0;
-        } else {
-            appliedPoints = inputPoints;
-            msgEl.style.color = '#16a34a';
-            msgEl.innerText = `ใช้ ${appliedPoints} แต้ม แลกส่วนลด ${appliedPoints} บาทสำเร็จ!`;
-        }
-        updateCartUI();
+    reader.onload = function(e) {
+
+        const img =
+            document.getElementById('design-preview');
+
+        img.src = e.target.result;
+
+        img.style.display = 'block';
+
+    };
+
+    reader.readAsDataURL(file);
+}
+
+
+/* =====================================================
+   ADD CART
+===================================================== */
+
+function addToCart() {
+
+    const size =
+        document.getElementById('shirt-size').value;
+
+    const qty =
+        parseInt(
+            document.getElementById('shirt-qty').value
+        ) || 1;
+
+    if(qty < 1) {
+
+        alert('จำนวนสินค้าต้องมากกว่า 0');
+
+        return;
     }
 
-    // -----------------------------------------------------------------
-    // 4. การอัปเดต UI หน้าตะกร้าและการคำนวณเงินทั้งหมด
-    // -----------------------------------------------------------------
-    function updateCartUI() {
-        const container = document.getElementById('cart-items-container');
-        const summaryDetailBox = document.getElementById('cart-summary-detail');
-        const subtotalEl = document.getElementById('summary-subtotal');
-        const discountEl = document.getElementById('summary-discount');
-        const pointsDiscountEl = document.getElementById('summary-points-discount');
-        const shippingEl = document.getElementById('summary-shipping');
-        const totalEl = document.getElementById('total-price');
+    const file =
+        document.getElementById('image-upload').files[0];
 
-        if (cart.length === 0) {
-            container.innerHTML = '<p style="color: #777; text-align: center; margin-top: 40px;">ไม่มีสินค้าในตะกร้า</p>';
-            summaryDetailBox.style.display = 'none';
-            totalEl.innerText = '0 บาท';
-            appliedDiscount = 0;
-            appliedCouponCode = '';
-            appliedPoints = 0;
-            document.getElementById('coupon-msg').innerText = '';
-            document.getElementById('points-msg').innerText = '';
-            return;
-        }
+    const designPreview =
+        document.getElementById('design-preview');
 
-        let html = '';
-        let subtotal = 0;
-        let totalQty = 0;
+    const hasDesign = !!file;
 
-        cart.forEach((item, index) => {
-            const itemTotal = item.price * item.qty;
-            subtotal += itemTotal;
-            totalQty += item.qty;
+    cart.push({
 
-            html += `
-                <div class="cart-item">
-                    <div style="display:flex; align-items:center; gap:12px; flex: 1;">
-                        ${item.designImg ? `<img src="${item.designImg}" style="width:40px; height:40px; object-fit:contain; border:1px solid #ddd; border-radius:4px; background:#fff;">` : ''}
-                        <div>
-                            <div style="font-weight: 600; color: #111827;">${item.name}</div>
-                            <div style="font-size: 0.85rem; color: #6b7280;">${item.price.toLocaleString()} บาท × ${item.qty}</div>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-weight: 600; color: #111827;">${itemTotal.toLocaleString()} บ.</span>
-                        <button onclick="removeItem(${index})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
+        id: Date.now(),
 
-        container.innerHTML = html;
+        name:
+            `เสื้อยืดสี${currentColorName} ไซส์ ${size}`,
 
-        // โปรโมชั่นส่งฟรีเมื่อสั่งซื้อ 2 ตัวขึ้นไป
-        let shippingFee = totalQty >= 2 ? 0 : 20;
+        color: currentColorName,
 
-        // ตรวจสอบเงื่อนไขคูปองซ้ำหากยอดเปลี่ยน
-        if (appliedCouponCode === 'JY700' && subtotal < 700) applyCoupon();
-        if (appliedCouponCode === 'JY1000' && subtotal < 1000) applyCoupon();
-        if (appliedCouponCode === 'JY2000' && subtotal < 2000) applyCoupon();
-        if (appliedCouponCode === 'JY5000' && subtotal < 5000) applyCoupon();
+        colorHex: currentColorHex,
 
-        let finalTotal = subtotal - appliedDiscount - appliedPoints + shippingFee;
-        if (finalTotal < 0) finalTotal = 0;
+        size: size,
 
-        // คำนวณแต้มสะสมใหม่ (สั่งซื้อครบทุก 300 บาท ได้ 1 แต้ม)
-        let earnedPoints = Math.floor(finalTotal / 300);
+        hasDesign: hasDesign,
 
-        subtotalEl.innerText = subtotal.toLocaleString() + ' บาท';
-        discountEl.innerText = '-' + appliedDiscount.toLocaleString() + ' บาท';
-        pointsDiscountEl.innerText = '-' + appliedPoints.toLocaleString() + ' บาท';
-        shippingEl.innerText = shippingFee === 0 ? 'ฟรี (โปรโมชั่น 2 ตัวขึ้นไป)' : '20 บาท';
-        totalEl.innerText = finalTotal.toLocaleString() + ' บาท';
-        document.getElementById('earn-points').innerText = earnedPoints;
+        designImage:
+            hasDesign ? designPreview.src : '',
 
-        // อัปเดต QR Code ตามยอดรวม (สมมติหมายเลข PromptPay ร้านค้าคือ 0812345678)
-        document.getElementById('qr-img').src = `https://promptpay.io/0812345678/${finalTotal}.png`;
+        price: PRICE_PER_SHIRT,
 
-        summaryDetailBox.style.display = 'block';
-        togglePaymentUI();
-    }
+        qty: qty
 
-    function togglePaymentUI() {
-        const method = document.getElementById('payment-method').value;
-        const qrContainer = document.getElementById('qr-container');
-        qrContainer.style.display = (method === 'promptpay') ? 'block' : 'none';
-    }
+    });
 
-    // -----------------------------------------------------------------
-    // 5. ระบบ Checkout และการเพิ่มสถานะคำสั่งซื้อ
-    // -----------------------------------------------------------------
-    function checkout() {
-        if (cart.length === 0) {
-            alert('กรุณาเลือกสินค้าลงตะกร้าก่อนทำการสั่งซื้อครับ');
-            return;
-        }
+    saveData();
 
-        const name = document.getElementById('ship-name').value.trim();
-        const phone = document.getElementById('ship-phone').value.trim();
-        const address = document.getElementById('ship-address').value.trim();
-        const paymentMethod = document.getElementById('payment-method').value;
+    updateCartBadge();
 
-        if (!name || !phone || !address) {
-            alert('กรุณากรอกข้อมูลจัดส่ง (ชื่อ, เบอร์โทร, ที่อยู่) ให้ครบถ้วนครับ');
-            return;
-        }
+    alert('เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว!');
 
-        let subtotal = 0;
-        let totalQty = 0;
-        cart.forEach(item => {
-            subtotal += item.price * item.qty;
-            totalQty += item.qty;
-        });
+}
 
-        let shippingFee = totalQty >= 2 ? 0 : 20;
-        let finalTotal = subtotal - appliedDiscount - appliedPoints + shippingFee;
-        if (finalTotal < 0) finalTotal = 0;
 
-        // คำนวณแต้มที่จะได้รับเพิ่ม
-        let earnedPoints = Math.floor(finalTotal / 300);
+/* =====================================================
+   CART BADGE
+===================================================== */
 
-        // ปรับปรุงแต้มสะสมของผู้ใช้
-        userPoints = userPoints - appliedPoints + earnedPoints;
-        document.getElementById('user-points-display').innerText = userPoints;
+function updateCartBadge() {
 
-        const orderId = 'JY-' + Math.floor(100000 + Math.random() * 900000);
-        const today = new Date();
-        const dateStr = today.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
-        
-        const deliveryDate = new Date(today);
-        deliveryDate.setDate(deliveryDate.getDate() + 4);
-        const deliveryStr = deliveryDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+    const totalQty =
+        cart.reduce(
+            (sum,item) =>
+                sum + item.qty,
+            0
+        );
 
-        const newOrder = {
-            id: orderId,
-            date: dateStr,
-            deliveryDate: deliveryStr,
-            items: [...cart],
-            total: finalTotal,
-            shippingInfo: { name, phone, address },
-            paymentMethod: paymentMethod === 'cod' ? 'เก็บเงินปลายทาง (COD)' : 'โอนผ่าน QR Code (PromptPay)',
-            status: 'กำลังเตรียมจัดส่ง',
-            earnedPoints: earnedPoints
-        };
+    document.getElementById('cart-badge')
+        .innerText = `(${totalQty})`;
+}
 
-        orders.unshift(newOrder);
-        
-        // เคลียร์ค่าในตะกร้าและฟอร์ม
-        cart = [];
+
+/* =====================================================
+   REMOVE
+===================================================== */
+
+function removeItem(index) {
+
+    cart.splice(index,1);
+
+    if(cart.length === 0) {
+
         appliedDiscount = 0;
         appliedCouponCode = '';
         appliedPoints = 0;
-        document.getElementById('coupon-input').value = '';
-        document.getElementById('points-input').value = '';
-        document.getElementById('ship-name').value = '';
-        document.getElementById('ship-phone').value = '';
-        document.getElementById('ship-address').value = '';
-        document.getElementById('cart-badge').innerText = '(0)';
-        
-        updateCartUI();
-        alert(`สั่งซื้อสำเร็จ! หมายเลขคำสั่งซื้อของคุณคือ ${orderId}\nคุณได้รับแต้มสะสมเพิ่ม ${earnedPoints} แต้ม`);
-        
-        // สลับไปหน้าติดตามสถานะ
-        document.querySelectorAll('.tab')[2].click();
+
     }
 
-    // -----------------------------------------------------------------
-    // 6. แสดงผลรายการติดตามสถานะ
-    // -----------------------------------------------------------------
-    function updateOrderStatusUI() {
-        const container = document.getElementById('order-status-container');
-        if (orders.length === 0) {
-            container.innerHTML = '<p style="color: #777; text-align: center; margin-top: 40px;">ยังไม่มีคำสั่งซื้อในขณะนี้</p>';
-            return;
+    saveData();
+
+    updateCartBadge();
+
+    updateCartUI();
+}
+
+
+/* =====================================================
+   COUPON
+===================================================== */
+
+function applyCoupon() {
+
+    const code =
+        document.getElementById('coupon-input')
+        .value
+        .trim()
+        .toUpperCase();
+
+    const msg =
+        document.getElementById('coupon-msg');
+
+    const subtotal =
+        getSubtotal();
+
+    const coupons = {
+
+        JY700: {
+            min:700,
+            discount:100
+        },
+
+        JY1000: {
+            min:1000,
+            discount:150
+        },
+
+        JY2000: {
+            min:2000,
+            discount:300
+        },
+
+        JY5000: {
+            min:5000,
+            discount:500
         }
 
-        let html = '';
-        orders.forEach(order => {
-            let itemsSummary = order.items.map(i => `${i.name} (x${i.qty})`).join(', ');
-            html += `
-                <div class="order-card">
-                    <div class="order-header">
-                        <span style="font-weight: bold; color: #1e3a8a;"><i class="fa-solid fa-receipt"></i> ${order.id}</span>
-                        <span style="color: #6b7280;">${order.date}</span>
-                    </div>
-                    <div style="font-size: 0.85rem; color: #374151; margin-bottom: 6px;">
-                        <strong>รายการสินค้า:</strong> ${itemsSummary}
-                    </div>
-                    <div style="font-size: 0.85rem; color: #374151; margin-bottom: 6px;">
-                        <strong>ผู้รับ:</strong> ${order.shippingInfo.name} (${order.shippingInfo.phone})
-                    </div>
-                    <div style="font-size: 0.85rem; color: #374151; margin-bottom: 6px;">
-                        <strong>ที่อยู่จัดส่ง:</strong> ${order.shippingInfo.address}
-                    </div>
-                    <div style="font-size: 0.85rem; color: #374151; margin-bottom: 6px;">
-                        <strong>ชำระเงินโดย:</strong> ${order.paymentMethod}
-                    </div>
-                    <div style="font-size: 0.85rem; color: #374151; margin-bottom: 8px;">
-                        <strong>ยอดชำระสุทธิ:</strong> ${order.total.toLocaleString()} บาท 
-                        <span style="color: #16a34a; font-weight: 500;">(+${order.earnedPoints} แต้ม)</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
-                        <span style="font-size: 0.8rem; background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-weight: 500;">
-                            <i class="fa-solid fa-spinner fa-spin"></i> ${order.status}
-                        </span>
-                    </div>
-                    <div style="font-size: 0.8rem; color: #4b5563; margin-top: 10px; border-top: 1px dashed #e5e7eb; padding-top: 8px; width: 100%;">
-                        <i class="fa-regular fa-calendar-check"></i> คาดว่าจะได้รับสินค้าภายในวันที่ <strong>${order.deliveryDate}</strong>
-                    </div>
-                </div>
-            `;
-        });
+    };
 
-        container.innerHTML = html;
+    if(code === '') {
+
+        appliedDiscount = 0;
+        appliedCouponCode = '';
+
+        msg.innerText = '';
+
+        updateCartUI();
+
+        return;
     }
+
+    if(!coupons[code]) {
+
+        appliedDiscount = 0;
+        appliedCouponCode = '';
+
+        msg.style.color = '#ef4444';
+
+        msg.innerText =
+            'โค้ดส่วนลดไม่ถูกต้อง';
+
+        updateCartUI();
+
+        return;
+    }
+
+    const coupon = coupons[code];
+
+    if(subtotal < coupon.min) {
+
+        appliedDiscount = 0;
+        appliedCouponCode = '';
+
+        msg.style.color = '#ef4444';
+
+        msg.innerText =
+            `ยอดซื้อขั้นต่ำ ${coupon.min.toLocaleString()} บาท`;
+
+        updateCartUI();
+
+        return;
+    }
+
+    appliedDiscount = coupon.discount;
+    appliedCouponCode = code;
+
+    msg.style.color = '#16a34a';
+
+    msg.innerText =
+        `ใช้โค้ด ${code} ลด ${coupon.discount} บาท สำเร็จ!`;
+
+    updateCartUI();
+}
+
+
+/* =====================================================
+   POINTS
+===================================================== */
+
+function applyPoints() {
+
+    const input =
+        parseInt(
+            document.getElementById('points-input').value
+        ) || 0;
+
+    const msg =
+        document.getElementById('points-msg');
+
+    const subtotal =
+        getSubtotal();
+
+    const maxDiscount =
+        Math.max(
+            0,
+            subtotal - appliedDiscount
+        );
+
+    if(input < 0) {
+
+        appliedPoints = 0;
+
+        msg.style.color = '#ef4444';
+
+        msg.innerText =
+            'จำนวนแต้มไม่ถูกต้อง';
+
+        return;
+    }
+
+    if(input > userPoints) {
+
+        appliedPoints = 0;
+
+        msg.style.color = '#ef4444';
+
+        msg.innerText =
+            `แต้มไม่พอ คุณมี ${userPoints} แต้ม`;
+
+        updateCartUI();
+
+        return;
+    }
+
+    if(input > maxDiscount) {
+
+        appliedPoints = 0;
+
+        msg.style.color = '#ef4444';
+
+        msg.innerText =
+            'ใช้แต้มได้ไม่เกินยอดสินค้าหลังหักคูปอง';
+
+        updateCartUI();
+
+        return;
+    }
+
+    appliedPoints = input;
+
+    msg.style.color = '#16a34a';
+
+    msg.innerText =
+        `ใช้ ${input} แต้ม ลด ${input} บาท สำเร็จ!`;
+
+    updateCartUI();
+}
+
+
+/* =====================================================
+   CALCULATIONS
+===================================================== */
+
+function getSubtotal() {
+
+    return cart.reduce(
+        (sum,item) =>
+            sum + (item.price * item.qty),
+        0
+    );
+}
+
+
+function getTotalQty() {
+
+    return cart.reduce(
+        (sum,item) =>
+            sum + item.qty,
+        0
+    );
+}
+
+
+function getShippingFee() {
+
+    return getTotalQty() >= 2
+        ? 0
+        : SHIPPING_FEE;
+}
+
+
+function getFinalTotal() {
+
+    const subtotal =
+        getSubtotal();
+
+    const shipping =
+        getShippingFee();
+
+    let total =
+        subtotal -
+        appliedDiscount -
+        appliedPoints +
+        shipping;
+
+    return Math.max(0,total);
+}
+
+
+/* =====================================================
+   CART UI
+===================================================== */
+
+function updateCartUI() {
+
+    const container =
+        document.getElementById(
+            'cart-items-container'
+        );
+
+    const summary =
+        document.getElementById(
+            'cart-summary-detail'
+        );
+
+    if(cart.length === 0) {
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                color:#777;
+                padding:40px 10px;">
+                <i class="fa-solid fa-cart-shopping"
+                   style="font-size:40px;color:#cbd5e1;"></i>
+
+                <p>ไม่มีสินค้าในตะกร้า</p>
+            </div>
+        `;
+
+        summary.style.display = 'none';
+
+        appliedDiscount = 0;
+        appliedCouponCode = '';
+        appliedPoints = 0;
+
+        return;
+    }
+
+    let html = '';
+
+    cart.forEach((item,index) => {
+
+        const itemTotal =
+            item.price * item.qty;
+
+        html += `
+
+        <div class="cart-item">
+
+            <div style="
+                display:flex;
+                gap:12px;
+                align-items:center;
+                flex:1;">
+
+                ${
+                    item.designImage
+                    ?
+                    `<img
+                        src="${item.designImage}"
+                        style="
+                        width:55px;
+                        height:55px;
+                        object-fit:contain;
+                        background:#fff;
+                        border:1px solid #ddd;
+                        border-radius:6px;">`
+                    :
+                    `<div style="
+                        width:55px;
+                        height:55px;
+                        border-radius:6px;
+                        background:${item.colorHex};
+                        border:1px solid #ddd;">
+                    </div>`
+                }
+
+                <div>
+
+                    <div style="
+                        font-weight:600;
+                        color:#111827;">
+
+                        เสื้อยืดสี${item.color}
+                        ไซส์ ${item.size}
+
+                    </div>
+
+                    <div style="
+                        font-size:.82rem;
+                        color:#6b7280;">
+
+                        ${
+                            item.hasDesign
+                            ? 'พร้อมสกรีนลาย'
+                            : 'เสื้อเปล่า'
+                        }
+
+                        <br>
+
+                        ${item.price.toLocaleString()}
+                        บาท × ${item.qty}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:12px;">
+
+                <span style="
+                    font-weight:600;">
+
+                    ${itemTotal.toLocaleString()} บ.
+
+                </span>
+
+                <button
+                    onclick="removeItem(${index})"
+                    style="
+                    background:none;
+                    border:none;
+                    color:#ef4444;
+                    cursor:pointer;
+                    font-size:18px;">
+
+                    <i class="fa-solid fa-trash-can"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    const subtotal =
+        getSubtotal();
+
+    const shipping =
+        getShippingFee();
+
+    let total =
+        getFinalTotal();
+
+    /* ป้องกันส่วนลดเกินยอด */
+
+    const maxDiscount =
+        Math.max(
+            0,
+            subtotal - appliedDiscount
+        );
+
+    if(appliedPoints > maxDiscount) {
+
+        appliedPoints = maxDiscount;
+
+    }
+
+    total = getFinalTotal();
+
+    /*
+       แต้มได้รับ:
+       ทุกยอดชำระครบ 300 บาท
+       = 1 แต้ม
+    */
+
+    const earnedPoints =
+        Math.floor(total / 300);
+
+    document.getElementById(
+        'summary-subtotal'
+    ).innerText =
+        subtotal.toLocaleString() +
+        ' บาท';
+
+    document.getElementById(
+        'summary-discount'
+    ).innerText =
+        '-' +
+        appliedDiscount.toLocaleString() +
+        ' บาท';
+
+    document.getElementById(
+        'summary-points-discount'
+    ).innerText =
+        '-' +
+        appliedPoints.toLocaleString() +
+        ' บาท';
+
+    document.getElementById(
+        'summary-shipping'
+    ).innerText =
+        shipping === 0
+        ? 'ฟรี (สั่ง 2 ตัวขึ้นไป)'
+        : shipping.toLocaleString() + ' บาท';
+
+    document.getElementById(
+        'total-price'
+    ).innerText =
+        total.toLocaleString() +
+        ' บาท';
+
+    document.getElementById(
+        'earn-points'
+    ).innerText =
+        earnedPoints;
+
+    document.getElementById(
+        'cod-total'
+    ).innerText =
+        total.toLocaleString();
+
+    /* QR */
+
+    updatePromptPayQR(total);
+
+    summary.style.display = 'block';
+
+    togglePaymentUI();
+}
+
+
+/* =====================================================
+   PROMPTPAY QR
+===================================================== */
+
+function updatePromptPayQR(amount) {
+
+    const qr =
+        document.getElementById('qr-img');
+
+    const amountText =
+        document.getElementById('qr-amount');
+
+    if(amount <= 0) {
+
+        qr.src = '';
+
+        amountText.innerText =
+            'ยอดชำระ 0 บาท';
+
+        return;
+    }
+
+    /*
+       PromptPay QR Generator
+    */
+
+    qr.src =
+        `https://promptpay.io/${PROMPTPAY_NUMBER}/${amount}.png`;
+
+    amountText.innerText =
+        `ยอดชำระ ${amount.toLocaleString()} บาท`;
+}
+
+
+/* =====================================================
+   PAYMENT UI
+===================================================== */
+
+function togglePaymentUI() {
+
+    const method =
+        document.getElementById(
+            'payment-method'
+        ).value;
+
+    const qr =
+        document.getElementById(
+            'qr-container'
+        );
+
+    const cod =
+        document.getElementById(
+            'cod-container'
+        );
+
+    if(method === 'promptpay') {
+
+        qr.style.display = 'block';
+        cod.style.display = 'none';
+
+    } else {
+
+        qr.style.display = 'none';
+        cod.style.display = 'block';
+
+    }
+}
+
+
+/* =====================================================
+   CHECKOUT
+===================================================== */
+
+function checkout() {
+
+    if(cart.length === 0) {
+
+        alert(
+            'กรุณาเลือกสินค้าลงตะกร้าก่อน'
+        );
+
+        return;
+    }
+
+    const name =
+        document.getElementById(
+            'ship-name'
+        ).value.trim();
+
+    const phone =
+        document.getElementById(
+            'ship-phone'
+        ).value.trim();
+
+    const address =
+        document.getElementById(
+            'ship-address'
+        ).value.trim();
+
+    const paymentMethod =
+        document.getElementById(
+            'payment-method'
+        ).value;
+
+    if(!name || !phone || !address) {
+
+        alert(
+            'กรุณากรอกชื่อ เบอร์โทร และที่อยู่ให้ครบ'
+        );
+
+        return;
+    }
+
+    /* ตรวจสอบเบอร์ */
+
+    const phoneClean =
+        phone.replace(/[^0-9]/g,'');
+
+    if(phoneClean.length < 9 ||
+       phoneClean.length > 10) {
+
+        alert(
+            'กรุณาตรวจสอบเบอร์โทรศัพท์'
+        );
+
+        return;
+    }
+
+    const subtotal =
+        getSubtotal();
+
+    const shipping =
+        getShippingFee();
+
+    const finalTotal =
+        getFinalTotal();
+
+    /*
+       แต้มจากยอดชำระสุทธิ
+       300 บาท = 1 แต้ม
+    */
+
+    const earnedPoints =
+        Math.floor(finalTotal / 300);
+
+    /*
+       ตัดแต้มที่ใช้
+       + เพิ่มแต้มใหม่
+    */
+
+    userPoints =
+        userPoints -
+        appliedPoints +
+        earnedPoints;
+
+    if(userPoints < 0) {
+        userPoints = 0;
+    }
+
+    const orderId =
+        'JY-' +
+        Math.floor(
+            100000 +
+            Math.random() * 900000
+        );
+
+    const today =
+        new Date();
+
+    const dateStr =
+        today.toLocaleDateString(
+            'th-TH',
+            {
+                year:'numeric',
+                month:'short',
+                day:'numeric'
+            }
+        );
+
+    const deliveryDate =
+        new Date(today);
+
+    deliveryDate.setDate(
+        deliveryDate.getDate() + 4
+    );
+
+    const deliveryStr =
+        deliveryDate.toLocaleDateString(
+            'th-TH',
+            {
+                year:'numeric',
+                month:'short',
+                day:'numeric'
+            }
+        );
+
+    const newOrder = {
+
+        id: orderId,
+
+        date: dateStr,
+
+        deliveryDate: deliveryStr,
+
+        items: [...cart],
+
+        subtotal: subtotal,
+
+        couponDiscount: appliedDiscount,
+
+        pointsUsed: appliedPoints,
+
+        shipping: shipping,
+
+        total: finalTotal,
+
+        earnedPoints: earnedPoints,
+
+        shippingInfo: {
+
+            name: name,
+
+            phone: phone,
+
+            address: address
+
+        },
+
+        paymentMethod:
+            paymentMethod === 'cod'
+            ? 'เก็บเงินปลายทาง (COD)'
+            : 'ชำระผ่าน QR Code (PromptPay)',
+
+        status:
+            paymentMethod === 'cod'
+            ? 'รอยืนยันคำสั่งซื้อ COD'
+            : 'รอการชำระเงิน',
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+    orders.unshift(newOrder);
+
+    cart = [];
+
+    appliedDiscount = 0;
+    appliedCouponCode = '';
+    appliedPoints = 0;
+
+    /*
+       Update points
+    */
+
+    document.getElementById(
+        'user-points-display'
+    ).innerText = userPoints;
+
+    /*
+       Clear forms
+    */
+
+    document.getElementById(
+        'coupon-input'
+    ).value = '';
+
+    document.getElementById(
+        'points-input'
+    ).value = '';
+
+    document.getElementById(
+        'ship-name'
+    ).value = '';
+
+    document.getElementById(
+        'ship-phone'
+    ).value = '';
+
+    document.getElementById(
+        'ship-address'
+    ).value = '';
+
+    document.getElementById(
+        'cart-badge'
+    ).innerText = '(0)';
+
+    saveData();
+
+    updateCartUI();
+
+    alert(
+        `สั่งซื้อสำเร็จ!\n\n` +
+        `หมายเลขคำสั่งซื้อ: ${orderId}\n` +
+        `ยอดชำระ: ${finalTotal.toLocaleString()} บาท\n` +
+        `ได้รับแต้ม: ${earnedPoints} แต้ม\n` +
+        `แต้มคงเหลือ: ${userPoints} แต้ม`
+    );
+
+    /*
+       เปิดสถานะคำสั่งซื้อ
+    */
+
+    document.querySelectorAll('.tab')[2].click();
+}
+
+
+/* =====================================================
+   ORDER STATUS
+===================================================== */
+
+function updateOrderStatusUI() {
+
+    const container =
+        document.getElementById(
+            'order-status-container'
+        );
+
+    if(orders.length === 0) {
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                color:#777;
+                padding:40px;">
+
+                <i class="fa-solid fa-box-open"
+                   style="
+                   font-size:45px;
+                   color:#cbd5e1;">
+                </i>
+
+                <p>
+                    ยังไม่มีคำสั่งซื้อในขณะนี้
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    let html = '';
+
+    orders.forEach(order => {
+
+        const itemsSummary =
+            order.items
+            .map(item =>
+                `${item.name} (x${item.qty})`
+            )
+            .join(', ');
+
+        html += `
+
+        <div class="order-card">
+
+            <div class="order-header">
+
+                <span style="
+                    font-weight:bold;
+                    color:#1e3a8a;">
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                    ${order.id}
+
+                </span>
+
+                <span style="
+                    color:#6b7280;">
+
+                    ${order.date}
+
+                </span>
+
+            </div>
+
+            <div style="
+                font-size:.85rem;
+                margin-bottom:7px;">
+
+                <strong>รายการ:</strong>
+                ${itemsSummary}
+
+            </div>
+
+            <div style="
+                font-size:.85rem;
+                margin-bottom:7px;">
+
+                <strong>ผู้รับ:</strong>
+                ${order.shippingInfo.name}
+
+                (${order.shippingInfo.phone})
+
+            </div>
+
+            <div style="
+                font-size:.85rem;
+                margin-bottom:7px;">
+
+                <strong>ที่อยู่:</strong>
+                ${order.shippingInfo.address}
+
+            </div>
+
+            <div style="
+                font-size:.85rem;
+                margin-bottom:7px;">
+
+                <strong>ชำระเงิน:</strong>
+                ${order.paymentMethod}
+
+            </div>
+
+            <div style="
+                font-size:.85rem;
+                margin-bottom:7px;">
+
+                <strong>ยอดสินค้า:</strong>
+                ${order.subtotal.toLocaleString()}
+                บาท
+
+            </div>
+
+            <div style="
+                font-size:.85rem;
+                margin-bottom:7px;">
+
+                <strong>ส่วนลดคูปอง:</strong>
+                -${order.couponDiscount.toLocaleString()}
+                บาท
+
+            </div>
+
+            <div style="
+                font-size:.85rem;
+                margin-bottom:7px;">
+
+                <strong>ใช้แต้ม:</strong>
+                -${order.pointsUsed.toLocaleString()}
+                บาท
+
+            </div>
+
+            <div style="
+                font-size:.9rem;
+                margin-bottom:8px;">
+
+                <strong>ยอดชำระสุทธิ:</strong>
+
+                <span style="
+                    color:#1e3a8a;
+                    font-weight:bold;">
+
+                    ${order.total.toLocaleString()}
+                    บาท
+
+                </span>
+
+            </div>
+
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:8px;">
+
+                <span style="
+                    font-size:.8rem;
+                    background:#dbeafe;
+                    color:#1e40af;
+                    padding:5px 12px;
+                    border-radius:20px;
+                    font-weight:500;">
+
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+
+                    ${order.status}
+
+                </span>
+
+            </div>
+
+            <div style="
+                font-size:.8rem;
+                color:#4b5563;
+                margin-top:10px;
+                border-top:1px dashed #e5e7eb;
+                padding-top:8px;
+                width:100%;">
+
+                <i class="fa-regular fa-calendar-check"></i>
+
+                คาดว่าจะได้รับสินค้า:
+                <strong>
+                    ${order.deliveryDate}
+                </strong>
+
+            </div>
+
+            ${
+                order.paymentMethod.includes('PromptPay')
+                ?
+                `<div style="
+                    margin-top:12px;
+                    color:#16a34a;
+                    font-size:.8rem;">
+
+                    <i class="fa-solid fa-qrcode"></i>
+
+                    หากยังไม่ได้ชำระเงิน
+                    สามารถเปิด QR Code
+                    จากหน้าตะกร้าสินค้าได้
+
+                </div>`
+                :
+                ''
+            }
+
+        </div>
+
+        `;
+
+    });
+
+    container.innerHTML = html;
+}
+
+
+/* =====================================================
+   INITIAL UI
+===================================================== */
+
+updateCartUI();
+
 </script>
+
 </body>
 </html>
+```
