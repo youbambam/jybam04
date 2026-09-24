@@ -1,1631 +1,2055 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ร้านออกแบบเสื้อแบรนด์ JY</title>
-    <!-- Google Fonts: Prompt -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Three.js Library สำหรับ 3D Canvas Real-time rendering -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Prompt', sans-serif;
-        }
-
-        body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* จำลองหน้าจอมือถือ */
-        .phone-container {
-            width: 100%;
-            max-width: 412px;
-            height: 100vh;
-            max-height: 844px;
-            background-color: #fff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @media (min-width: 413px) {
-            .phone-container {
-                border-radius: 40px;
-                border: 12px solid #2d2d2d;
-            }
-        }
-
-        /* Header */
-        .app-header {
-            background: linear-gradient(135deg, #111827, #374151);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            position: relative;
-        }
-
-        .app-header h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        .app-header p {
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        /* ปุ่ม Admin ทางลัดมุมบนขวา */
-        .admin-shortcut-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: all 0.2s;
-        }
-
-        .admin-shortcut-btn:hover {
-            background: rgba(255, 255, 255, 0.35);
-        }
-
-        /* Content Area */
-        .app-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background-color: #f9fafb;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Banner หน้าแรก */
-        .hero-banner {
-            background: #e5e7eb;
-            padding: 15px;
-            border-radius: 16px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 1px dashed #9ca3af;
-        }
-
-        .hero-banner img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        .hero-banner h2 {
-            color: #111827;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .hero-banner p {
-            color: #4b5563;
-            font-size: 0.85rem;
-        }
-
-        /* เมนูลัด */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .menu-card {
-            background: white;
-            padding: 15px 10px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #e5e7eb;
-        }
-
-        .menu-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .menu-card i {
-            font-size: 1.8rem;
-            color: #111827;
-            margin-bottom: 8px;
-        }
-
-        .menu-card h3 {
-            font-size: 0.85rem;
-            color: #333;
-            font-weight: 500;
-        }
-
-        /* รายการสินค้า & ฟอร์ม */
-        .product-card {
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            border: 1px solid #e5e7eb;
-            position: relative;
-        }
-
-        .product-img {
-            width: 65px;
-            height: 65px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .product-info {
-            flex: 1;
-            margin-left: 12px;
-        }
-
-        .product-info h4 {
-            font-size: 0.9rem;
-            color: #111827;
-        }
-
-        .product-info p {
-            font-size: 0.8rem;
-            color: #4b5563;
-            font-weight: 600;
-        }
-
-        .btn-add {
-            background-color: #111827;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: background 0.2s;
-        }
-
-        .btn-add:hover {
-            background-color: #374151;
-        }
-
-        /* ฟอร์มออกแบบเสื้อเอง */
-        .custom-form {
-            background: white;
-            padding: 16px;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            border: 1px solid #e5e7eb;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-
-        .form-group select, .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            outline: none;
-            resize: vertical;
-        }
-
-        /* จานสีแบบขยายหลากสี */
-        .color-options {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .color-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid #e5e7eb;
-            transition: transform 0.2s, border-color 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .color-circle.selected {
-            border-color: #111827;
-            transform: scale(1.15);
-            box-shadow: 0 0 0 2px #3b82f6;
-        }
-
-        /* ---------------- 3D Fitting & Simulation Styles ---------------- */
-        .canvas-3d-wrapper {
-            position: relative;
-            width: 100%;
-            height: 340px;
-            background: radial-gradient(circle at center, #2d3748 0%, #1a202c 100%);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            border: 2px solid #374151;
-        }
-
-        #avatar-3d-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .canvas-overlay-tag {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.6);
-            color: #38bdf8;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            backdrop-filter: blur(4px);
-            font-weight: 600;
-        }
-
-        .ai-gen-box {
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            border: 1px solid #bfdbfe;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        .ai-gen-box h4 {
-            font-size: 0.85rem;
-            color: #1e40af;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* คูปองส่วนลด */
-        .coupon-card {
-            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px dashed #9ca3af;
-        }
-
-        .coupon-info h4 {
-            font-size: 0.9rem;
-            color: #111827;
-        }
-
-        .coupon-info p {
-            font-size: 0.75rem;
-            color: #4b5563;
-        }
-
-        .coupon-code {
-            background: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-weight: 600;
-            color: #111827;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        /* ตะกร้าสินค้า & การจัดการที่อยู่หลายที่ */
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9rem;
-        }
-
-        .address-box-cart, .coupon-box-cart {
-            margin-top: 15px;
-            background: #fff;
-            padding: 14px;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .address-card-item {
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 8px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .address-card-item.selected {
-            border-color: #2563eb;
-            background-color: #eff6ff;
-        }
-
-        .address-card-item input[type="radio"] {
-            margin-top: 3px;
-        }
-
-        .address-info-text {
-            font-size: 0.8rem;
-            color: #374151;
-            flex: 1;
-        }
-
-        .address-info-text strong {
-            color: #111827;
-            font-size: 0.85rem;
-        }
-
-        .btn-add-address {
-            width: 100%;
-            background: #f3f4f6;
-            border: 1px dashed #9ca3af;
-            color: #374151;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .btn-add-address:hover {
-            background: #e5e7eb;
-        }
-
-        .coupon-box-cart input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            outline: none;
-        }
-
-        .cart-summary-detail {
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px solid #eee;
-            font-size: 0.85rem;
-            color: #4b5563;
-        }
-
-        .cart-summary-detail div {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .cart-total {
-            margin-top: 10px;
-            padding-top: 12px;
-            border-top: 2px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #111827;
-        }
-
-        .btn-checkout {
-            width: 100%;
-            background-color: #111827;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 500;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-
-        /* Modal บังคับกรอกที่อยู่ */
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            padding: 20px;
-        }
-
-        .modal-card {
-            background: white;
-            border-radius: 16px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .modal-card h3 {
-            font-size: 1.1rem;
-            color: #111827;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* ติดตามสถานะคำสั่งซื้อ */
-        .order-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 15px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
-        }
-
-        .order-id {
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .order-date {
-            color: #888;
-        }
-
-        .order-address-info {
-            background: #f9fafb;
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid #f3f4f6;
-            font-size: 0.8rem;
-            color: #4b5563;
-            margin-top: 8px;
-        }
-
-        .order-schedule {
-            background: #f3f4f6;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            color: #374151;
-            margin-top: 12px;
-        }
-
-        /* ระบบ Chat Interface UI */
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 210px);
-            max-height: 600px;
-            background: #fff;
-            border-radius: 16px;
-            border: 1px solid #e5e7eb;
-            overflow: hidden;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: #f9fafb;
-        }
-
-        .chat-message {
-            max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 14px;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            word-break: break-word;
-        }
-
-        .chat-message.user {
-            align-self: flex-end;
-            background-color: #111827;
-            color: #ffffff;
-            border-bottom-right-radius: 2px;
-        }
-
-        .chat-message.admin {
-            align-self: flex-start;
-            background-color: #e5e7eb;
-            color: #1f2937;
-            border-bottom-left-radius: 2px;
-        }
-
-        .chat-time {
-            font-size: 0.65rem;
-            opacity: 0.7;
-            margin-top: 4px;
-            text-align: right;
-        }
-
-        .chat-input-area {
-            display: flex;
-            padding: 10px;
-            background: #fff;
-            border-top: 1px solid #e5e7eb;
-            gap: 8px;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            outline: none;
-        }
-
-        .chat-input-area button {
-            background: #111827;
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        /* Admin Dashboard Styles */
-        .admin-box {
-            background: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            margin-bottom: 15px;
-        }
-
-        /* Bottom Navigation */
-        .nav-bar {
-            height: 65px;
-            background: white;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .nav-item {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #888;
-            cursor: pointer;
-            font-size: 0.65rem;
-            flex: 1;
-        }
-
-        .nav-item i {
-            font-size: 1.1rem;
-            margin-bottom: 3px;
-        }
-
-        .nav-item.active {
-            color: #111827;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="phone-container">
-        <!-- Header -->
-        <div class="app-header">
-            <h1>👕 JY Clothing Brand</h1>
-            <p>รับออกแบบและผลิตเสื้อผ้าแฟชั่นตามสั่ง (3D Real-time)</p>
-            <button class="admin-shortcut-btn" onclick="openAdminPanel()"><i class="fa-solid fa-user-gear"></i> แอดมิน</button>
-        </div>
-
-        <!-- Main Content -->
-        <div class="app-content">
-            
-            <!-- หน้าแรก (Home) -->
-            <div id="home" class="section active">
-                <div class="hero-banner">
-                    <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&auto=format&fit=crop&q=60" alt="JY Clothing Fashion Apparel">
-                    <h2>คอลเลคชันเสื้อผ้าแฟชั่นแบรนด์ JY</h2>
-                    <p>ซื้อครบ 700ลด150 | 1,000ลด230 | 2,000ลด330 | 5,000ลด500 บาท<br>พิเศษ! ซื้อ 2 ตัวขึ้นไป ส่งฟรีทันที</p>
-                </div>
-
-                <h3 style="font-size: 1rem; margin-bottom: 15px; color: #333;">เมนูลัด</h3>
-                
-                <div class="menu-grid">
-                    <div class="menu-card" onclick="switchTab('designs')">
-                        <i class="fa-solid fa-shirt"></i>
-                        <h3>1. แบบเสื้อแบรนด์</h3>
-                    </div>
-                    <div class="menu-card" onclick="switchTab('custom')">
-                        <i class="fa-solid fa-cube"></i>
-                        <h3>2. ออกแบบ 3D & AI</h3>
-                    </div>
-                    <div class="menu-card" onclick="switchTab('coupons')">
-                        <i class="fa-solid fa-ticket"></i>
-                        <h3>3. โค้ดส่วนลด</h3>
-                    </div>
-                    <div class="menu-card" onclick="switchTab('cart')">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <h3>4. ตะกร้าสินค้า</h3>
-                    </div>
-                    <div class="menu-card" onclick="switchTab('chat')">
-                        <i class="fa-solid fa-comments"></i>
-                        <h3>5. พูดคุยกับแอดมิน</h3>
-                    </div>
-                    <div class="menu-card" onclick="switchTab('status')">
-                        <i class="fa-solid fa-truck-fast"></i>
-                        <h3>6. ติดตามสถานะ</h3>
-                    </div>
-                </div>
-            </div>
-
-            <!-- หน้าที่ 2: แบบเสื้อแบรนด์ -->
-            <div id="designs" class="section">
-                <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-shirt"></i> คอลเลคชันเสื้อผ้าแบรนด์</h3>
-                
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60" class="product-img" alt="Minimal Streetwear Tee">
-                    <div class="product-info">
-                        <h4>Minimal Streetwear Tee</h4>
-                        <p>ราคา 250 บาท</p>
-                    </div>
-                    <button class="btn-add" onclick="addToCart('เสื้อแบรนด์: Minimal Streetwear Tee', 250, 1)">+ เพิ่ม</button>
-                </div>
-
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60" class="product-img" alt="Classic Typography Shirt">
-                    <div class="product-info">
-                        <h4>Classic Typography Shirt</h4>
-                        <p>ราคา 220 บาท</p>
-                    </div>
-                    <button class="btn-add" onclick="addToCart('เสื้อแบรนด์: Classic Typography Shirt', 220, 1)">+ เพิ่ม</button>
-                </div>
-
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&auto=format&fit=crop&q=60" class="product-img" alt="Vintage Retro Oversized">
-                    <div class="product-info">
-                        <h4>Vintage Retro Oversized</h4>
-                        <p>ราคา 280 บาท</p>
-                    </div>
-                    <button class="btn-add" onclick="addToCart('เสื้อแบรนด์: Vintage Retro Oversized', 280, 1)">+ เพิ่ม</button>
-                </div>
-
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=60" class="product-img" alt="Abstract Art Print Top">
-                    <div class="product-info">
-                        <h4>Abstract Art Print Top</h4>
-                        <p>ราคา 300 บาท</p>
-                    </div>
-                    <button class="btn-add" onclick="addToCart('เสื้อแบรนด์: Abstract Art Print Top', 300, 1)">+ เพิ่ม</button>
-                </div>
-
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500&auto=format&fit=crop&q=60" class="product-img" alt="JY Signature Black Tee">
-                    <div class="product-info">
-                        <h4>JY Signature Black Tee</h4>
-                        <p>ราคา 250 บาท</p>
-                    </div>
-                    <button class="btn-add" onclick="addToCart('เสื้อแบรนด์: JY Signature Black Tee', 250, 1)">+ เพิ่ม</button>
-                </div>
-            </div>
-
-            <!-- หน้าที่ 3: ออกแบบเสื้อและกางเกง 3D -->
-            <div id="custom" class="section">
-                <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-cube"></i> ระบบออกแบบ 3D Human Fitting Avatar</h3>
-                
-                <!-- 3D Fitting Simulation Viewer -->
-                <div class="canvas-3d-wrapper">
-                    <div class="canvas-overlay-tag"><i class="fa-solid fa-rotate"></i> หมุนได้ 360 องศา (คลิกลากเพื่อหมุน)</div>
-                    <canvas id="avatar-3d-canvas"></canvas>
-                </div>
-
-                <!-- AI Design Prompt Assistant -->
-                <div class="ai-gen-box">
-                    <h4><i class="fa-solid fa-wand-magic-sparkles"></i> AI ช่วยเจนแบบเสื้อผ้า 3D</h4>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="ai-prompt-input" placeholder="เช่น 'เสื้อยืดสปอร์ต สีส้ม'" style="padding: 8px; border-radius: 8px; border: 1px solid #bfdbfe; font-size: 0.8rem; flex: 1;">
-                        <button onclick="generateAI3DShirt()" style="background: #2563eb; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; white-space: nowrap;">เจนแบบ 3D</button>
-                    </div>
-                </div>
-
-                <div class="custom-form">
-                    <!-- ส่วนสร้าง Avatar 3D จากสัดส่วน -->
-                    <div style="background: #f8fafc; padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
-                        <label style="color: #0f172a; font-size: 0.85rem; font-weight: 700; display: block; margin-bottom: 6px;">
-                            <i class="fa-solid fa-user"></i> 1. ปรับสัดส่วนหุ่น 3D
-                        </label>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px;">
-                            <div>
-                                <small>ส่วนสูง (ซม.)</small>
-                                <input type="number" id="body-height" value="175" min="150" max="200" oninput="updateAvatarShape()">
-                            </div>
-                            <div>
-                                <small>ขนาดหน้าอก/ลำตัว</small>
-                                <input type="number" id="body-chest" value="38" min="30" max="50" oninput="updateAvatarShape()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- การเลือกหมวดการตัดเย็บ -->
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-scissors"></i> เลือกประเภทการสั่งตัด</label>
-                        <select id="item-type-select" onchange="toggleCutTypeUI(); update3DFittingModel();">
-                            <option value="full" selected>สั่งตัดทั้งชุด (เสื้อ + กางเกง)</option>
-                            <option value="shirt">เฉพาะเสื้อท่อนบน (Shirt / Top)</option>
-                            <option value="pants">เฉพาะกางเกงท่อนล่าง (Pants / Bottom)</option>
-                        </select>
-                    </div>
-
-                    <!-- ตัวเลือกร้านสั่งตัดกางเกง -->
-                    <div class="form-group" id="pants-price-group">
-                        <label>เลือกทรงกางเกงและราคา</label>
-                        <select id="pants-style-select" onchange="update3DFittingModel();">
-                            <option value="250" selected>กางเกงขาสั้นแฟชั่น/สปอร์ต (250 บาท)</option>
-                            <option value="350">กางเกงสแล็คขายาวทรงกระบอก (350 บาท)</option>
-                            <option value="400">กางเกงลินินขายาวทรงหลวม (400 บาท)</option>
-                            <option value="450">กางเกงยีนส์สั่งตัดพิเศษ (450 บาท)</option>
-                        </select>
-                    </div>
-
-                    <!-- ตัวเลือกชนิดผ้า -->
-                    <div class="form-group">
-                        <label>ชนิดผ้า (สัมผัสและการพริ้วไหว 3D)</label>
-                        <select id="fabric-select" onchange="update3DFittingModel();">
-                            <option value="cotton" data-price="200">ผ้าคอตตอน Cotton (เริ่มต้น 200 บาท)</option>
-                            <option value="satin" data-price="280">ผ้าซาติน Satin - พริ้วเงาสวย (เริ่มต้น 280 บาท)</option>
-                            <option value="denim" data-price="350">ผ้ายีนส์ Denim - ทรงแข็งตัว (เริ่มต้น 350 บาท)</option>
-                            <option value="linen" data-price="250">ผ้าลินิน Linen - เบาสบาย (เริ่มต้น 250 บาท)</option>
-                        </select>
-                    </div>
-
-                    <!-- จานสีเนื้อผ้า -->
-                    <div class="form-group">
-                        <label style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>เลือกสีเนื้อผ้าหลัก</span>
-                            <span id="selected-color-name" style="color: #2563eb; font-weight: 700;">ขาว</span>
-                        </label>
-                        <div class="color-options">
-                            <div class="color-circle selected" style="background-color: #ffffff;" title="ขาว" onclick="select3DColor(this, 'ขาว', '#ffffff')"></div>
-                            <div class="color-circle" style="background-color: #111827;" title="ดำ" onclick="select3DColor(this, 'ดำ', '#111827')"></div>
-                            <div class="color-circle" style="background-color: #6b7280;" title="เทาเข้ม" onclick="select3DColor(this, 'เทาเข้ม', '#6b7280')"></div>
-                            <div class="color-circle" style="background-color: #ef4444;" title="แดงสด" onclick="select3DColor(this, 'แดงสด', '#ef4444')"></div>
-                            <div class="color-circle" style="background-color: #f472b6;" title="ชมพูพาสเทล" onclick="select3DColor(this, 'ชมพูพาสเทล', '#f472b6')"></div>
-                            <div class="color-circle" style="background-color: #fb923c;" title="ส้มโอลด์โรส" onclick="select3DColor(this, 'ส้มโอลด์โรส', '#fb923c')"></div>
-                            <div class="color-circle" style="background-color: #eab308;" title="เหลืองมัสตาร์ด" onclick="select3DColor(this, 'เหลืองมัสตาร์ด', '#eab308')"></div>
-                            <div class="color-circle" style="background-color: #10b981;" title="เขียวมรกต" onclick="select3DColor(this, 'เขียวมรกต', '#10b981')"></div>
-                            <div class="color-circle" style="background-color: #38bdf8;" title="ฟ้าพาสเทล" onclick="select3DColor(this, 'ฟ้าพาสเทล', '#38bdf8')"></div>
-                            <div class="color-circle" style="background-color: #1d4ed8;" title="น้ำเงินกรมท่า" onclick="select3DColor(this, 'น้ำเงินกรมท่า', '#1d4ed8')"></div>
-                            <div class="color-circle" style="background-color: #8b5cf6;" title="ม่วงลาเวนเดอร์" onclick="select3DColor(this, 'ม่วงลาเวนเดอร์', '#8b5cf6')"></div>
-                            <div class="color-circle" style="background-color: #d97706;" title="น้ำตาลเบจ" onclick="select3DColor(this, 'น้ำตาลเบจ', '#d97706')"></div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px; background: #f3f4f6; padding: 6px 10px; border-radius: 8px;">
-                            <span style="font-size: 0.8rem; color: #4b5563;">กำหนดสีเอง:</span>
-                            <input type="color" id="custom-color-picker" value="#ffffff" onchange="customColorPicked(this.value)" style="border: none; width: 32px; height: 32px; cursor: pointer; background: transparent;">
-                        </div>
-                    </div>
-
-                    <!-- เลือกปกเสื้อ และ แขนเสื้อ -->
-                    <div class="form-group" id="shirt-parts-group">
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                            <div>
-                                <label style="font-size: 0.8rem;">ปกเสื้อ (Collar)</label>
-                                <select id="collar-style" onchange="update3DFittingModel()">
-                                    <option value="round">ปกคอกลม</option>
-                                    <option value="vneck">ปกคอวี</option>
-                                    <option value="polo">ปกโปโล</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="font-size: 0.8rem;">แขนเสื้อ (Sleeves)</label>
-                                <select id="sleeve-style" onchange="update3DFittingModel()">
-                                    <option value="short">แขนสั้น</option>
-                                    <option value="long">แขนยาว</option>
-                                    <option value="sleeveless">แขนกุด</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- อะไหล่เสริม: กระดุม 4 บาท & ซิป 12 บาท -->
-                    <div class="form-group" style="background: #fff7ed; padding: 10px; border-radius: 8px; border: 1px solid #ffedd5;">
-                        <label style="color: #c2410c;"><i class="fa-solid fa-circle-dot"></i> เลือกอะไหล่เพิ่มเติม</label>
-                        
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span style="font-size: 0.8rem;">กระดุม (เม็ดละ 4 บาท)</span>
-                            <div style="display: flex; gap: 5px; align-items: center;">
-                                <input type="color" id="button-color-picker" value="#000000" style="width: 28px; height: 28px; border: none; cursor: pointer;" onchange="update3DFittingModel()">
-                                <input type="number" id="button-count" value="0" min="0" max="10" style="width: 55px; padding: 4px;" oninput="update3DFittingModel()"> เม็ด
-                            </div>
-                        </div>
-
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 0.8rem;">ติดซิปหน้า (12 บาท)</span>
-                            <input type="checkbox" id="zip-option" style="width: 20px; height: 20px;" onchange="update3DFittingModel()">
-                        </div>
-                    </div>
-
-                    <!-- ส่วนระบุจำนวนที่ต้องการสั่งตัด -->
-                    <div class="form-group" style="background: #eff6ff; padding: 12px; border-radius: 8px; border: 1px solid #bfdbfe;">
-                        <label style="color: #1e40af;"><i class="fa-solid fa-hashtag"></i> จำนวนที่ต้องการสั่งตัด (ตัว/ชุด)</label>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="number" id="custom-quantity" value="1" min="1" max="500" style="padding: 8px; font-weight: 600; font-size: 1rem; width: 100px; text-align: center;" oninput="update3DFittingModel()">
-                            <span style="font-size: 0.85rem; color: #3b82f6;">(ราคาต่อหน่วย <span id="unit-price-label">450</span> บาท)</span>
-                        </div>
-                    </div>
-
-                    <!-- คำนวณราคาสรุป 3D Real-time -->
-                    <div style="background: #111827; color: white; padding: 12px; border-radius: 10px; margin-top: 15px; text-align: center;">
-                        <div style="font-size: 0.8rem; opacity: 0.8;">ราคารวมประมาณการการสั่งตัด (ตามจำนวน)</div>
-                        <div id="3d-calculated-price" style="font-size: 1.4rem; font-weight: 700; color: #38bdf8;">450 บาท</div>
-                        <button onclick="addCustom3DToCart()" style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                            <i class="fa-solid fa-cart-plus"></i> เพิ่มรายการสั่งตัดลงตะกร้า
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- หน้าที่ 4: โค้ดส่วนลด -->
-            <div id="coupons" class="section">
-                <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-ticket"></i> โค้ดส่วนลดโปรโมชัน</h3>
-                
-                <div class="coupon-card">
-                    <div class="coupon-info">
-                        <h4>ส่วนลด 150 บาท</h4>
-                        <p>เมื่อซื้อสินค้าครบ 700 บาท</p>
-                    </div>
-                    <div class="coupon-code" onclick="applyCouponCode('JY150')">JY150</div>
-                </div>
-
-                <div class="coupon-card">
-                    <div class="coupon-info">
-                        <h4>ส่วนลด 230 บาท</h4>
-                        <p>เมื่อซื้อสินค้าครบ 1,000 บาท</p>
-                    </div>
-                    <div class="coupon-code" onclick="applyCouponCode('JY230')">JY230</div>
-                </div>
-
-                <div class="coupon-card">
-                    <div class="coupon-info">
-                        <h4>ส่วนลด 330 บาท</h4>
-                        <p>เมื่อซื้อสินค้าครบ 2,000 บาท</p>
-                    </div>
-                    <div class="coupon-code" onclick="applyCouponCode('JY330')">JY330</div>
-                </div>
-
-                <div class="coupon-card">
-                    <div class="coupon-info">
-                        <h4>ส่วนลด 500 บาท</h4>
-                        <p>เมื่อซื้อสินค้าครบ 5,000 บาท</p>
-                    </div>
-                    <div class="coupon-code" onclick="applyCouponCode('JY500')">JY500</div>
-                </div>
-            </div>
-
-            <!-- หน้าที่ 5: ตะกร้าสินค้า -->
-            <div id="cart" class="section">
-                <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-cart-shopping"></i> ตะกร้าสินค้าของคุณ</h3>
-                
-                <div id="cart-items-container">
-                    <!-- แสดงรายการสินค้าที่ถูกเพิ่ม -->
-                    <p style="text-align: center; color: #888; margin: 30px 0;">ไม่มีสินค้าในตะกร้า</p>
-                </div>
-
-                <!-- ระบบเลือกและจัดการที่อยู่จัดส่งสินค้าหลายที่ -->
-                <div class="address-box-cart">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <label style="font-size: 0.85rem; font-weight: 600; color: #111827;">
-                            <i class="fa-solid fa-location-dot" style="color: #ef4444;"></i> เลือกที่อยู่จัดส่งสินค้า
-                        </label>
-                    </div>
-                    
-                    <div id="address-list-container">
-                        <!-- รายการที่อยู่จะถูกสร้างไดนามิกที่นี่ -->
-                    </div>
-
-                    <button class="btn-add-address" onclick="openAddressModal()">
-                        <i class="fa-solid fa-plus"></i> เพิ่มที่อยู่จัดส่งใหม่
-                    </button>
-                </div>
-
-                <div class="coupon-box-cart">
-                    <label style="font-size: 0.85rem; font-weight: 600;">โค้ดส่วนลด</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="cart-coupon-input" placeholder="ระบุโค้ด เช่น JY150">
-                        <button onclick="applyCartCoupon()" style="margin-top: 5px; background: #111827; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">ใช้โค้ด</button>
-                    </div>
-                </div>
-
-                <div class="cart-summary-detail">
-                    <div>
-                        <span>ราคารวมสินค้า:</span>
-                        <span id="summary-subtotal">0 บาท</span>
-                    </div>
-                    <div>
-                        <span>ส่วนลดจากโค้ด:</span>
-                        <span id="summary-discount" style="color: #ef4444;">-0 บาท</span>
-                    </div>
-                    <div>
-                        <span>ค่าจัดส่ง:</span>
-                        <span id="summary-shipping">ฟรี</span>
-                    </div>
-                </div>
-
-                <div class="cart-total">
-                    <span>ยอดชำระสุทธิ:</span>
-                    <span id="summary-total" style="color: #2563eb;">0 บาท</span>
-                </div>
-
-                <button class="btn-checkout" onclick="handleCheckoutProcess()"><i class="fa-solid fa-credit-card"></i> ยืนยันการสั่งซื้อ</button>
-            </div>
-
-            <!-- หน้าที่ 6: พูดคุยกับแอดมิน -->
-            <div id="chat" class="section">
-                <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-comments"></i> แชทสอบถามแอดมิน</h3>
-                
-                <div class="chat-container">
-                    <div class="chat-messages" id="chat-messages-list">
-                        <div class="chat-message admin">
-                            ยินดีต้อนรับสู่ JY Clothing ครับ! มีข้อสงสัยเกี่ยวกับการสั่งตัดหรือสั่งซื้อสินค้า สอบถามแอดมินได้เลยนะครับ
-                            <div class="chat-time">10:00</div>
-                        </div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" placeholder="พิมพ์ข้อความ..." onkeypress="if(event.key==='Enter') sendChatMessage()">
-                        <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- หน้าที่ 7: ติดตามสถานะ -->
-            <div id="status" class="section">
-                <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-truck-fast"></i> ติดตามสถานะคำสั่งซื้อ</h3>
-                
-                <div id="orders-list-container">
-                    <!-- รายการสั่งซื้อจะแสดงที่นี่ -->
-                </div>
-            </div>
-
-            <!-- หน้า Admin Panel -->
-            <div id="admin" class="section">
-                <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-user-gear"></i> แผงควบคุมแอดมิน (Admin Panel)</h3>
-                
-                <div class="admin-box">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 10px;">รายการสั่งซื้อที่เข้ามา</h4>
-                    <div id="admin-orders-log" style="font-size: 0.8rem; color: #4b5563;">
-                        ยังไม่มีรายการสั่งซื้อเข้ามา
-                    </div>
-                </div>
-
-                <div class="admin-box">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 10px;">ตอบแชทลูกค้า</h4>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="admin-reply-input" placeholder="พิมพ์ข้อความตอบกลับลูกค้า..." style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.8rem; flex: 1;">
-                        <button onclick="sendAdminReply()" style="background: #2563eb; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">ส่ง</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Navigation Bar ด้านล่าง -->
-        <div class="nav-bar">
-            <button class="nav-item active" onclick="switchTab('home')">
-                <i class="fa-solid fa-house"></i>
-                <span>หน้าแรก</span>
-            </button>
-            <button class="nav-item" onclick="switchTab('designs')">
-                <i class="fa-solid fa-shirt"></i>
-                <span>สินค้า</span>
-            </button>
-            <button class="nav-item" onclick="switchTab('custom')">
-                <i class="fa-solid fa-cube"></i>
-                <span>3D ออกแบบ</span>
-            </button>
-            <button class="nav-item" onclick="switchTab('cart')">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span>ตะกร้า</span>
-            </button>
-            <button class="nav-item" onclick="switchTab('chat')">
-                <i class="fa-solid fa-comments"></i>
-                <span>แชท</span>
-            </button>
-        </div>
-
-        <!-- Modal Popup สำหรับเพิ่มที่อยู่ใหม่ (บังคับกรอกหากยังไม่มีที่อยู่) -->
-        <div class="modal-overlay" id="address-modal">
-            <div class="modal-card">
-                <h3><i class="fa-solid fa-map-location-dot" style="color: #ef4444;"></i> กรอกที่อยู่สำหรับจัดส่งสินค้า</h3>
-                <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 15px;">กรุณาระบุข้อมูลที่อยู่สำหรับจัดส่งสินค้าให้ครบถ้วนเพื่อดำเนินการสั่งซื้อ</p>
-                
-                <div class="form-group">
-                    <label>ชื่อ-นามสกุล ผู้รับ <span style="color:red;">*</span></label>
-                    <input type="text" id="modal-name" placeholder="เช่น คุณสมชาย เข็มกลัด">
-                </div>
-
-                <div class="form-group">
-                    <label>เบอร์โทรศัพท์ติดต่อ <span style="color:red;">*</span></label>
-                    <input type="tel" id="modal-phone" placeholder="เช่น 081-234-5678">
-                </div>
-
-                <div class="form-group">
-                    <label>ที่อยู่จัดส่งโดยละเอียด <span style="color:red;">*</span></label>
-                    <textarea id="modal-address" rows="3" placeholder="บ้านเลขที่, ถนน, แขวง/ตำบล, เขต/อำเภอ, จังหวัด, รหัสไปรษณีย์"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>ระบุเพิ่มเติม / หมายเหตุถึงขนส่ง (ถ้ามี)</label>
-                    <input type="text" id="modal-note" placeholder="เช่น ฝากไว้ที่ป้อมยาม, โทรแจ้งก่อนส่ง">
-                </div>
-
-                <div style="display: flex; gap: 8px; margin-top: 20px;">
-                    <button id="modal-cancel-btn" onclick="closeAddressModal()" style="flex: 1; background: #e5e7eb; color: #374151; border: none; padding: 10px; border-radius: 8px; cursor: pointer;">ยกเลิก</button>
-                    <button onclick="saveNewAddress()" style="flex: 1; background: #2563eb; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;">บันทึกที่อยู่</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- JavaScript Logic & 3D Three.js Simulation Script -->
-    <script>
-        // --- 1. Global State Management ---
-        let cart = [];
-        let userAddresses = []; // คลังเก็บที่อยู่หลายที่อยู่
-        let selectedAddressIndex = -1; // ดัชนีที่อยู่ที่ถูกเลือก
-        let isCheckoutPending = false; // ตัวแปรเช็คว่ากดสั่งซื้อแล้วรอกรอกที่อยู่หรือไม่
-
-        let appliedCoupon = null;
-        let selectedColorHex = '#ffffff';
-        let selectedColorName = 'ขาว';
-
-        // Three.js State Variables
-        let scene, camera, renderer, controls;
-        let avatarGroup, shirtMesh, pantsMesh, buttonsGroup;
-
-        // --- 2. Tab Navigation System ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
-            const targetSection = document.getElementById(tabId);
-            if (targetSection) targetSection.classList.add('active');
-
-            const navIndexMap = { 'home': 0, 'designs': 1, 'custom': 2, 'cart': 3, 'chat': 4 };
-            const navItems = document.querySelectorAll('.nav-item');
-            if (navIndexMap[tabId] !== undefined && navItems[navIndexMap[tabId]]) {
-                navItems[navIndexMap[tabId]].classList.add('active');
-            }
-
-            if (tabId === 'custom') {
-                setTimeout(onWindowResize, 100);
-            }
-        }
-
-        function openAdminPanel() {
-            switchTab('admin');
-        }
-
-        // --- 3. Address Management System (ที่อยู่หลายที่) ---
-        function renderAddresses() {
-            const container = document.getElementById('address-list-container');
-            if (userAddresses.length === 0) {
-                container.innerHTML = `<p style="font-size: 0.8rem; color: #ef4444; text-align: center; padding: 10px 0;"><i class="fa-solid fa-circle-exclamation"></i> ยังไม่มีข้อมูลที่อยู่จัดส่ง กรุณากรอกที่อยู่</p>`;
-                selectedAddressIndex = -1;
-                return;
-            }
-
-            if (selectedAddressIndex === -1 && userAddresses.length > 0) {
-                selectedAddressIndex = 0; // เลือกอันแรกเป็นค่าเริ่มต้น
-            }
-
-            let html = '';
-            userAddresses.forEach((addr, idx) => {
-                const isChecked = (idx === selectedAddressIndex) ? 'checked' : '';
-                const isSelectedClass = (idx === selectedAddressIndex) ? 'selected' : '';
-                html += `
-                    <div class="address-card-item ${isSelectedClass}" onclick="selectAddress(${idx})">
-                        <input type="radio" name="delivery_address" id="addr_${idx}" ${isChecked} onchange="selectAddress(${idx})">
-                        <div class="address-info-text">
-                            <strong>คุณ${addr.name} (${addr.phone})</strong><br>
-                            ${addr.address}
-                            ${addr.note ? `<br><small style="color: #6b7280;"><i class="fa-regular fa-comment-dots"></i> ${addr.note}</small>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function selectAddress(index) {
-            selectedAddressIndex = index;
-            renderAddresses();
-        }
-
-        function openAddressModal(forced = false) {
-            isCheckoutPending = forced;
-            const cancelBtn = document.getElementById('modal-cancel-btn');
-            if (forced) {
-                cancelBtn.style.display = 'none'; // ซ่อนปุ่มยกเลิกถ้าถูกบังคับกรอกตอนยืนยันสั่งซื้อ
-            } else {
-                cancelBtn.style.display = 'block';
-            }
-            document.getElementById('address-modal').style.display = 'flex';
-        }
-
-        function closeAddressModal() {
-            document.getElementById('address-modal').style.display = 'none';
-            isCheckoutPending = false;
-        }
-
-        function saveNewAddress() {
-            const name = document.getElementById('modal-name').value.trim();
-            const phone = document.getElementById('modal-phone').value.trim();
-            const address = document.getElementById('modal-address').value.trim();
-            const note = document.getElementById('modal-note').value.trim();
-
-            if (!name || !phone || !address) {
-                alert('กรุณากรอก ชื่อ, เบอร์โทรศัพท์ และที่อยู่จัดส่ง ให้ครบถ้วน');
-                return;
-            }
-
-            const newAddrObj = { name, phone, address, note };
-            userAddresses.push(newAddrObj);
-            selectedAddressIndex = userAddresses.length - 1; // เลือกที่อยู่ที่เพิ่งเพิ่มทันที
-
-            // เคลียร์ฟอร์ม
-            document.getElementById('modal-name').value = '';
-            document.getElementById('modal-phone').value = '';
-            document.getElementById('modal-address').value = '';
-            document.getElementById('modal-note').value = '';
-
-            closeAddressModal();
-            renderAddresses();
-
-            // หากมาจากการกดสั่งซื้อค้างไว้ ให้ดำเนินการสั่งซื้อต่อทันที
-            if (isCheckoutPending) {
-                executeOrderCheckout();
-            }
-        }
-
-        // --- 4. Process Order Checkout ---
-        function handleCheckoutProcess() {
-            if (cart.length === 0) {
-                alert('ไม่มีสินค้าในตะกร้า กรุณาเลือกสินค้าก่อนทำการสั่งซื้อ');
-                return;
-            }
-
-            // ตรวจสอบว่ามีที่อยู่แล้วหรือยัง
-            if (userAddresses.length === 0 || selectedAddressIndex === -1) {
-                alert('คุณยังไม่ได้กรอกที่อยู่จัดส่ง กรุณากรอกข้อมูลที่อยู่จัดส่งก่อนทำรายการ');
-                openAddressModal(true); // เปิด Modal บังคับกรอกที่อยู่
-                return;
-            }
-
-            executeOrderCheckout();
-        }
-
-        function executeOrderCheckout() {
-            const activeAddress = userAddresses[selectedAddressIndex];
-            const total = document.getElementById('summary-total').innerText;
-            const itemsSummary = cart.map(i => `${i.title} (x${i.qty})`).join(', ');
-            const newOrderId = '#JY-' + Math.floor(10000 + Math.random() * 90000);
-
-            alert('ยืนยันคำสั่งซื้อเรียบร้อย! ยอดชำระสุทธิ: ' + total + '\nจัดส่งไปที่คุณ: ' + activeAddress.name);
-
-            // เพิ่มลงในหน้าติดตามสถานะ
-            const orderContainer = document.getElementById('orders-list-container');
-            const orderHTML = `
-                <div class="order-card">
-                    <div class="order-header">
-                        <span class="order-id">ออเดอร์ ${newOrderId}</span>
-                        <span class="order-date">วันนี้</span>
-                    </div>
-                    <p style="font-size: 0.85rem; color: #374151;"><strong>รายการ:</strong> ${itemsSummary}</p>
-                    <div class="order-address-info">
-                        <i class="fa-solid fa-user"></i> คุณ${activeAddress.name} (${activeAddress.phone})<br>
-                        <i class="fa-solid fa-house"></i> ${activeAddress.address}
-                        ${activeAddress.note ? `<br><small style="color: #6b7280;"><i class="fa-regular fa-comment-dots"></i> หมายเหตุ: ${activeAddress.note}</small>` : ''}
-                    </div>
-                    <p style="font-size: 0.85rem; color: #374151; margin-top: 8px;"><strong>ยอดชำระ:</strong> ${total}</p>
-                    <p style="font-size: 0.85rem; color: #374151; margin-top: 4px;"><strong>สถานะ:</strong> <span style="color: #2563eb; font-weight: 600;">รับออเดอร์แล้ว (Received)</span></p>
-                    <div class="order-schedule">
-                        <i class="fa-regular fa-clock"></i> คาดว่าจะจัดส่งภายใน 3-5 วันทำการ
-                    </div>
-                </div>
-            `;
-            orderContainer.insertAdjacentHTML('afterbegin', orderHTML);
-
-            // บันทึก Log ฝั่งแอดมิน
-            const adminLog = document.getElementById('admin-orders-log');
-            if (adminLog.innerText.includes('ยังไม่มีรายการสั่งซื้อ')) adminLog.innerHTML = '';
-            adminLog.insertAdjacentHTML('afterbegin', `<div style="margin-bottom: 6px;">- ออเดอร์ ${newOrderId} : รับออเดอร์แล้ว (${total}) [ส่ง: คุณ${activeAddress.name} Tel:${activeAddress.phone}]</div>`);
-
-            // ล้างตะกร้าสินค้า
-            cart = [];
-            appliedCoupon = null;
-            updateCartUI();
-            switchTab('status');
-        }
-
-        // --- 5. 3D Fitting Scene Setup (Three.js) ---
-        function init3D() {
-            const container = document.querySelector('.canvas-3d-wrapper');
-            const canvas = document.getElementById('avatar-3d-canvas');
-
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 1.2, 3.2);
-
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.shadowMap.enabled = true;
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambientLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(2, 4, 3);
-            scene.add(dirLight);
-
-            const backLight = new THREE.DirectionalLight(0x38bdf8, 0.4);
-            backLight.position.set(-2, 2, -2);
-            scene.add(backLight);
-
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.target.set(0, 1.0, 0);
-
-            avatarGroup = new THREE.Group();
-            scene.add(avatarGroup);
-
-            build3DAvatarAndClothing();
-            animate();
-
-            window.addEventListener('resize', onWindowResize);
-        }
-
-        function build3DAvatarAndClothing() {
-            while (avatarGroup.children.length > 0) {
-                avatarGroup.remove(avatarGroup.children[0]);
-            }
-
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xd3a383, roughness: 0.5 });
-            const clothMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(selectedColorHex), roughness: 0.4 });
-            const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 });
-
-            const headGeom = new THREE.SphereGeometry(0.12, 32, 32);
-            const head = new THREE.Mesh(headGeom, bodyMat);
-            head.position.y = 1.65;
-            avatarGroup.add(head);
-
-            const torsoGeom = new THREE.CylinderGeometry(0.18, 0.15, 0.6, 32);
-            const torso = new THREE.Mesh(torsoGeom, bodyMat);
-            torso.position.y = 1.25;
-            avatarGroup.add(torso);
-
-            shirtMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.17, 0.58, 32), clothMat);
-            shirtMesh.position.y = 1.26;
-            avatarGroup.add(shirtMesh);
-
-            pantsMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.65, 32), pantsMat);
-            pantsMesh.position.y = 0.65;
-            avatarGroup.add(pantsMesh);
-
-            buttonsGroup = new THREE.Group();
-            avatarGroup.add(buttonsGroup);
-            renderButtons();
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if (controls) controls.update();
-            if (renderer && scene && camera) renderer.render(scene, camera);
-        }
-
-        function onWindowResize() {
-            const container = document.querySelector('.canvas-3d-wrapper');
-            if (!container || !renderer || !camera) return;
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        }
-
-        // --- 6. 3D Control & Pricing Calculations ---
-        function select3DColor(element, name, hex) {
-            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedColorHex = hex;
-            selectedColorName = name;
-            document.getElementById('selected-color-name').innerText = name;
-            document.getElementById('custom-color-picker').value = hex;
-            update3DFittingModel();
-        }
-
-        function customColorPicked(hex) {
-            selectedColorHex = hex;
-            selectedColorName = 'กำหนดเอง';
-            document.getElementById('selected-color-name').innerText = 'กำหนดเอง';
-            update3DFittingModel();
-        }
-
-        function toggleCutTypeUI() {
-            const itemType = document.getElementById('item-type-select').value;
-            const shirtGroup = document.getElementById('shirt-parts-group');
-            const pantsGroup = document.getElementById('pants-price-group');
-
-            if (itemType === 'full') {
-                shirtGroup.style.display = 'block';
-                pantsGroup.style.display = 'block';
-            } else if (itemType === 'shirt') {
-                shirtGroup.style.display = 'block';
-                pantsGroup.style.display = 'none';
-            } else if (itemType === 'pants') {
-                shirtGroup.style.display = 'none';
-                pantsGroup.style.display = 'block';
-            }
-        }
-
-        function renderButtons() {
-            if (!buttonsGroup) return;
-            while (buttonsGroup.children.length > 0) {
-                buttonsGroup.remove(buttonsGroup.children[0]);
-            }
-
-            const count = parseInt(document.getElementById('button-count').value) || 0;
-            const btnColor = document.getElementById('button-color-picker').value;
-            const btnMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(btnColor) });
-            const btnGeom = new THREE.CylinderGeometry(0.012, 0.012, 0.005, 16);
-
-            for (let i = 0; i < count; i++) {
-                const btn = new THREE.Mesh(btnGeom, btnMat);
-                btn.rotation.x = Math.PI / 2;
-                btn.position.set(0, 1.45 - (i * 0.07), 0.2);
-                buttonsGroup.add(btn);
-            }
-        }
-
-        function updateAvatarShape() {
-            const chestVal = parseFloat(document.getElementById('body-chest').value) || 38;
-            const scaleFactor = chestVal / 38;
-            if (shirtMesh) shirtMesh.scale.set(scaleFactor, 1, scaleFactor);
-            if (pantsMesh) pantsMesh.scale.set(scaleFactor, 1, scaleFactor);
-        }
-
-        function update3DFittingModel() {
-            if (shirtMesh) shirtMesh.material.color.set(selectedColorHex);
-            
-            const itemType = document.getElementById('item-type-select').value;
-            if (shirtMesh) shirtMesh.visible = (itemType === 'full' || itemType === 'shirt');
-            if (pantsMesh) pantsMesh.visible = (itemType === 'full' || itemType === 'pants');
-
-            renderButtons();
-            calculate3DPrice();
-        }
-
-        function calculate3DPrice() {
-            const itemType = document.getElementById('item-type-select').value;
-            const fabricSelect = document.getElementById('fabric-select');
-            const fabricPrice = parseInt(fabricSelect.options[fabricSelect.selectedIndex].getAttribute('data-price')) || 200;
-            const pantsPrice = parseInt(document.getElementById('pants-style-select').value) || 250;
-            const btnCount = parseInt(document.getElementById('button-count').value) || 0;
-            const hasZip = document.getElementById('zip-option').checked;
-            const qty = parseInt(document.getElementById('custom-quantity').value) || 1;
-
-            let unitPrice = 0;
-            if (itemType === 'full') unitPrice = fabricPrice + pantsPrice;
-            else if (itemType === 'shirt') unitPrice = fabricPrice;
-            else if (itemType === 'pants') unitPrice = pantsPrice;
-
-            unitPrice += (btnCount * 4);
-            if (hasZip) unitPrice += 12;
-
-            const total = unitPrice * qty;
-
-            document.getElementById('unit-price-label').innerText = unitPrice;
-            document.getElementById('3d-calculated-price').innerText = total + " บาท";
-            return { unitPrice, total, qty };
-        }
-
-        function generateAI3DShirt() {
-            const prompt = document.getElementById('ai-prompt-input').value.trim();
-            if (!prompt) {
-                alert('กรุณากรอกสไตล์ที่ต้องการให้ AI ออกแบบ');
-                return;
-            }
-            alert('AI ออกแบบลายผ้า 3D ตามคำสั่ง: "' + prompt + '" เรียบร้อยแล้ว!');
-            selectedColorHex = '#2563eb';
-            selectedColorName = 'น้ำเงิน AI';
-            document.getElementById('selected-color-name').innerText = selectedColorName;
-            update3DFittingModel();
-        }
-
-        function addCustom3DToCart() {
-            const priceData = calculate3DPrice();
-            const itemType = document.getElementById('item-type-select').value;
-            let title = "เสื้อผ้าสั่งตัด 3D (สี" + selectedColorName + ")";
-            if (itemType === 'full') title = "ชุดเสื้อ+กางเกงสั่งตัด 3D (สี" + selectedColorName + ")";
-            else if (itemType === 'pants') title = "กางเกงสั่งตัด 3D (สี" + selectedColorName + ")";
-
-            addToCart(title, priceData.unitPrice, priceData.qty);
-            switchTab('cart');
-        }
-
-        // --- 7. Cart & Coupon Management ---
-        function addToCart(title, price, qty = 1) {
-            cart.push({ title, price, qty });
-            updateCartUI();
-            alert('เพิ่ม "' + title + '" (จำนวน ' + qty + ' ตัว) ลงในตะกร้าเรียบร้อยแล้ว');
-        }
-
-        function applyCouponCode(code) {
-            document.getElementById('cart-coupon-input').value = code;
-            switchTab('cart');
-            applyCartCoupon();
-        }
-
-        function applyCartCoupon() {
-            const code = document.getElementById('cart-coupon-input').value.trim().toUpperCase();
-            if (code === 'JY150') appliedCoupon = { code: 'JY150', min: 700, discount: 150 };
-            else if (code === 'JY230') appliedCoupon = { code: 'JY230', min: 1000, discount: 230 };
-            else if (code === 'JY330') appliedCoupon = { code: 'JY330', min: 2000, discount: 330 };
-            else if (code === 'JY500') appliedCoupon = { code: 'JY500', min: 5000, discount: 500 };
-            else {
-                alert('ไม่พบโค้ดส่วนลดนี้');
-                appliedCoupon = null;
-            }
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const container = document.getElementById('cart-items-container');
-            if (cart.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #888; margin: 30px 0;">ไม่มีสินค้าในตะกร้า</p>';
-            } else {
-                let html = '';
-                cart.forEach((item, index) => {
-                    const itemTotal = item.price * item.qty;
-                    html += `
-                        <div class="cart-item">
-                            <div>
-                                <div><strong>${item.title}</strong></div>
-                                <div style="color: #6b7280; font-size: 0.8rem;">ราคา: ${item.price} x ${item.qty} ตัว = <strong>${itemTotal} บาท</strong></div>
-                            </div>
-                            <button onclick="removeFromCart(${index})" style="color: #ef4444; border: none; background: none; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            let discount = 0;
-
-            if (appliedCoupon) {
-                if (subtotal >= appliedCoupon.min) {
-                    discount = appliedCoupon.discount;
-                } else {
-                    alert('ยอดสั่งซื้อไม่ถึงขั้นต่ำสำหรับโค้ด ' + appliedCoupon.code + ' (ขั้นต่ำ ' + appliedCoupon.min + ' บาท)');
-                    appliedCoupon = null;
+<script>
+/* =========================================================
+   JY CLOTHING BRAND
+   3D HUMAN MODEL SYSTEM
+   ========================================================= */
+
+let scene, camera, renderer, controls;
+let avatarGroup;
+let shirtMesh;
+let pantsMesh;
+let buttonsGroup;
+
+let selectedColorHex = '#ffffff';
+let selectedColorName = 'ขาว';
+
+
+/* =========================================================
+   1. เริ่มต้นระบบ 3D
+   ========================================================= */
+
+function init3D() {
+
+    const container = document.querySelector('.canvas-3d-wrapper');
+    const canvas = document.getElementById('avatar-3d-canvas');
+
+    if (!container || !canvas) {
+        console.error('ไม่พบพื้นที่ 3D');
+        return;
+    }
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(
+        45,
+        container.clientWidth / container.clientHeight,
+        0.1,
+        1000
+    );
+
+    camera.position.set(0, 1.7, 4.8);
+
+    renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true,
+        alpha: true
+    });
+
+    renderer.setSize(
+        container.clientWidth,
+        container.clientHeight
+    );
+
+    renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio, 2)
+    );
+
+    renderer.shadowMap.enabled = true;
+
+    /* พื้นหลัง */
+    scene.background = new THREE.Color(0xf8f7ff);
+
+
+    /* =====================================================
+       แสง
+       ===================================================== */
+
+    const ambientLight =
+        new THREE.AmbientLight(0xffffff, 0.8);
+
+    scene.add(ambientLight);
+
+
+    const keyLight =
+        new THREE.DirectionalLight(0xffffff, 1.1);
+
+    keyLight.position.set(3, 5, 4);
+
+    keyLight.castShadow = true;
+
+    scene.add(keyLight);
+
+
+    const fillLight =
+        new THREE.DirectionalLight(0xdbeafe, 0.6);
+
+    fillLight.position.set(-3, 3, 2);
+
+    scene.add(fillLight);
+
+
+    const backLight =
+        new THREE.DirectionalLight(0xf5d0fe, 0.5);
+
+    backLight.position.set(0, 3, -4);
+
+    scene.add(backLight);
+
+
+    /* =====================================================
+       Controls
+       ===================================================== */
+
+    controls =
+        new THREE.OrbitControls(
+            camera,
+            renderer.domElement
+        );
+
+    controls.enableDamping = true;
+
+    controls.dampingFactor = 0.05;
+
+    controls.target.set(0, 1.55, 0);
+
+    controls.minDistance = 2.5;
+
+    controls.maxDistance = 7;
+
+    controls.enablePan = false;
+
+
+    /* =====================================================
+       กลุ่มหุ่น
+       ===================================================== */
+
+    avatarGroup = new THREE.Group();
+
+    scene.add(avatarGroup);
+
+
+    build3DAvatarAndClothing();
+
+    animate();
+
+
+    window.addEventListener(
+        'resize',
+        onWindowResize
+    );
+}
+
+
+/* =========================================================
+   2. วัสดุผิว
+   ========================================================= */
+
+function createSkinMaterial() {
+
+    return new THREE.MeshStandardMaterial({
+        color: 0xf0b28c,
+        roughness: 0.72,
+        metalness: 0
+    });
+
+}
+
+
+/* =========================================================
+   3. สร้างทรงกระบอก
+   ========================================================= */
+
+function createCylinder(
+    radiusTop,
+    radiusBottom,
+    height,
+    color
+) {
+
+    const geometry =
+        new THREE.CylinderGeometry(
+            radiusTop,
+            radiusBottom,
+            height,
+            32
+        );
+
+    const material =
+        new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.65
+        });
+
+    const mesh =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+
+    return mesh;
+}
+
+
+/* =========================================================
+   4. สร้างแขน
+   ========================================================= */
+
+function createArm(side) {
+
+    const armGroup =
+        new THREE.Group();
+
+    const skin =
+        createSkinMaterial();
+
+
+    /* ต้นแขน */
+
+    const upperArm =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                0.105,
+                0.48,
+                8,
+                16
+            ),
+            skin
+        );
+
+    upperArm.position.y = -0.28;
+
+    upperArm.rotation.z =
+        side === 'left'
+            ? -0.08
+            : 0.08;
+
+    armGroup.add(upperArm);
+
+
+    /* ปลายแขน */
+
+    const foreArm =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                0.09,
+                0.42,
+                8,
+                16
+            ),
+            skin
+        );
+
+    foreArm.position.y = -0.72;
+
+    armGroup.add(foreArm);
+
+
+    /* มือ */
+
+    const hand =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.13,
+                20,
+                20
+            ),
+            skin
+        );
+
+    hand.scale.set(
+        0.8,
+        1.25,
+        0.7
+    );
+
+    hand.position.y = -1.03;
+
+    armGroup.add(hand);
+
+
+    armGroup.position.x =
+        side === 'left'
+            ? -0.67
+            : 0.67;
+
+    armGroup.position.y = 2.15;
+
+    armGroup.rotation.z =
+        side === 'left'
+            ? -0.10
+            : 0.10;
+
+    return armGroup;
+}
+
+
+/* =========================================================
+   5. สร้างขา
+   ========================================================= */
+
+function createLeg(side) {
+
+    const legGroup =
+        new THREE.Group();
+
+    const skin =
+        createSkinMaterial();
+
+
+    /* ต้นขา */
+
+    const thigh =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                0.17,
+                0.72,
+                8,
+                20
+            ),
+            skin
+        );
+
+    thigh.position.y = -0.45;
+
+    legGroup.add(thigh);
+
+
+    /* น่อง */
+
+    const calf =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                0.135,
+                0.68,
+                8,
+                20
+            ),
+            skin
+        );
+
+    calf.position.y = -1.15;
+
+    legGroup.add(calf);
+
+
+    /* เท้า */
+
+    const foot =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.22,
+                20,
+                16
+            ),
+            new THREE.MeshStandardMaterial({
+                color: 0x222222,
+                roughness: 0.8
+            })
+        );
+
+    foot.scale.set(
+        1.35,
+        0.55,
+        1.9
+    );
+
+    foot.position.set(
+        side === 'left'
+            ? -0.02
+            : 0.02,
+        -1.75,
+        0.12
+    );
+
+    legGroup.add(foot);
+
+
+    legGroup.position.x =
+        side === 'left'
+            ? -0.22
+            : 0.22;
+
+    legGroup.position.y = 1.05;
+
+    return legGroup;
+}
+
+
+/* =========================================================
+   6. สร้างเสื้อ
+   ========================================================= */
+
+function createShirtModel(
+    material,
+    chestScale
+) {
+
+    const group =
+        new THREE.Group();
+
+
+    /* ตัวเสื้อ */
+
+    const shirtBody =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                0.54 * chestScale,
+                0.48 * chestScale,
+                1.35,
+                48
+            ),
+            material
+        );
+
+    shirtBody.scale.z = 0.78;
+
+    shirtBody.position.y = 2.05;
+
+    shirtBody.castShadow = true;
+
+    group.add(shirtBody);
+
+
+    /* ไหล่ซ้าย */
+
+    const shoulderLeft =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.32,
+                24,
+                16
+            ),
+            material
+        );
+
+    shoulderLeft.scale.set(
+        1.25,
+        0.72,
+        0.8
+    );
+
+    shoulderLeft.position.set(
+        -0.58 * chestScale,
+        2.55,
+        0
+    );
+
+    group.add(shoulderLeft);
+
+
+    /* ไหล่ขวา */
+
+    const shoulderRight =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.32,
+                24,
+                16
+            ),
+            material
+        );
+
+    shoulderRight.scale.set(
+        1.25,
+        0.72,
+        0.8
+    );
+
+    shoulderRight.position.set(
+        0.58 * chestScale,
+        2.55,
+        0
+    );
+
+    group.add(shoulderRight);
+
+
+    /* แขนเสื้อ */
+
+    const sleeveStyle =
+        document.getElementById(
+            'sleeve-style'
+        )?.value || 'short';
+
+
+    if (sleeveStyle === 'short') {
+
+        createSleeve(
+            group,
+            material,
+            -0.70 * chestScale,
+            2.30,
+            0.35
+        );
+
+        createSleeve(
+            group,
+            material,
+            0.70 * chestScale,
+            2.30,
+            0.35
+        );
+
+    }
+
+
+    if (sleeveStyle === 'long') {
+
+        createSleeve(
+            group,
+            material,
+            -0.70 * chestScale,
+            2.10,
+            0.75
+        );
+
+        createSleeve(
+            group,
+            material,
+            0.70 * chestScale,
+            2.10,
+            0.75
+        );
+
+    }
+
+
+    /* คอเสื้อ */
+
+    createCollar(
+        group,
+        material
+    );
+
+
+    return group;
+}
+
+
+/* =========================================================
+   7. แขนเสื้อ
+   ========================================================= */
+
+function createSleeve(
+    group,
+    material,
+    x,
+    y,
+    height
+) {
+
+    const sleeve =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                0.18,
+                0.15,
+                height,
+                32
+            ),
+            material
+        );
+
+    sleeve.position.set(
+        x,
+        y,
+        0
+    );
+
+    sleeve.rotation.z =
+        x < 0
+            ? -0.10
+            : 0.10;
+
+    sleeve.castShadow = true;
+
+    group.add(sleeve);
+}
+
+
+/* =========================================================
+   8. คอเสื้อ
+   ========================================================= */
+
+function createCollar(
+    group,
+    material
+) {
+
+    const collarStyle =
+        document.getElementById(
+            'collar-style'
+        )?.value || 'round';
+
+
+    if (collarStyle === 'round') {
+
+        const collar =
+            new THREE.Mesh(
+                new THREE.TorusGeometry(
+                    0.19,
+                    0.045,
+                    12,
+                    32
+                ),
+                material
+            );
+
+        collar.position.y = 2.72;
+
+        collar.rotation.x =
+            Math.PI / 2;
+
+        group.add(collar);
+
+    }
+
+
+    if (collarStyle === 'vneck') {
+
+        const points = [
+            new THREE.Vector3(
+                -0.20,
+                2.70,
+                0.43
+            ),
+            new THREE.Vector3(
+                0,
+                2.48,
+                0.43
+            ),
+            new THREE.Vector3(
+                0.20,
+                2.70,
+                0.43
+            )
+        ];
+
+        const geometry =
+            new THREE.BufferGeometry()
+                .setFromPoints(points);
+
+        const line =
+            new THREE.Line(
+                geometry,
+                new THREE.LineBasicMaterial({
+                    color: 0x333333
+                })
+            );
+
+        group.add(line);
+
+    }
+
+
+    if (collarStyle === 'polo') {
+
+        const collar =
+            new THREE.Mesh(
+                new THREE.CylinderGeometry(
+                    0.22,
+                    0.22,
+                    0.12,
+                    32
+                ),
+                material
+            );
+
+        collar.position.y = 2.70;
+
+        group.add(collar);
+
+    }
+
+}
+
+
+/* =========================================================
+   9. สร้างกางเกง
+   ========================================================= */
+
+function createPantsModel(
+    material,
+    chestScale
+) {
+
+    const group =
+        new THREE.Group();
+
+
+    const style =
+        document.getElementById(
+            'pants-style-select'
+        )?.value || '250';
+
+
+    let height = 0.75;
+
+
+    if (style === '250') {
+
+        /* ขาสั้น */
+
+        height = 0.75;
+
+    }
+
+    else if (style === '350') {
+
+        /* สแล็คขายาว */
+
+        height = 1.75;
+
+    }
+
+    else if (style === '400') {
+
+        /* ลินินขายาว */
+
+        height = 1.85;
+
+    }
+
+    else if (style === '450') {
+
+        /* ยีนส์ */
+
+        height = 1.85;
+
+    }
+
+
+    /* เอว */
+
+    const waist =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                0.46 * chestScale,
+                0.48 * chestScale,
+                0.30,
+                40
+            ),
+            material
+        );
+
+    waist.position.y = 1.30;
+
+    group.add(waist);
+
+
+    /* ขาซ้าย */
+
+    const leftLeg =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                0.20,
+                0.17,
+                height,
+                32
+            ),
+            material
+        );
+
+    leftLeg.position.set(
+        -0.22,
+        1.30 - height / 2,
+        0
+    );
+
+    leftLeg.castShadow = true;
+
+    group.add(leftLeg);
+
+
+    /* ขาขวา */
+
+    const rightLeg =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                0.20,
+                0.17,
+                height,
+                32
+            ),
+            material
+        );
+
+    rightLeg.position.set(
+        0.22,
+        1.30 - height / 2,
+        0
+    );
+
+    rightLeg.castShadow = true;
+
+    group.add(rightLeg);
+
+
+    return group;
+}
+
+
+/* =========================================================
+   10. สร้างหุ่นคนทั้งหมด
+   ========================================================= */
+
+function build3DAvatarAndClothing() {
+
+    if (!avatarGroup) return;
+
+
+    /* ล้างของเดิม */
+
+    while (
+        avatarGroup.children.length > 0
+    ) {
+
+        const object =
+            avatarGroup.children[0];
+
+        avatarGroup.remove(object);
+
+        object.traverse(
+            function(child) {
+
+                if (child.geometry) {
+                    child.geometry.dispose();
                 }
+
+                if (child.material) {
+
+                    if (Array.isArray(
+                        child.material
+                    )) {
+
+                        child.material.forEach(
+                            m => m.dispose()
+                        );
+
+                    }
+
+                    else {
+                        child.material.dispose();
+                    }
+
+                }
+
             }
+        );
+    }
 
-            const total = Math.max(0, subtotal - discount);
 
-            document.getElementById('summary-subtotal').innerText = subtotal + ' บาท';
-            document.getElementById('summary-discount').innerText = '-' + discount + ' บาท';
-            document.getElementById('summary-total').innerText = total + ' บาท';
+    const skin =
+        createSkinMaterial();
+
+
+    /* =====================================================
+       ลำตัว
+       ===================================================== */
+
+    const body =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.62,
+                32,
+                24
+            ),
+            skin
+        );
+
+    body.scale.set(
+        0.85,
+        1.45,
+        0.52
+    );
+
+    body.position.y = 2.05;
+
+    body.castShadow = true;
+
+    avatarGroup.add(body);
+
+
+    /* =====================================================
+       คอ
+       ===================================================== */
+
+    const neck =
+        createCylinder(
+            0.16,
+            0.17,
+            0.22,
+            0xf0b28c
+        );
+
+    neck.position.y = 2.78;
+
+    avatarGroup.add(neck);
+
+
+    /* =====================================================
+       หัว
+       ===================================================== */
+
+    const head =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.34,
+                32,
+                32
+            ),
+            skin
+        );
+
+    head.scale.set(
+        0.88,
+        1.12,
+        0.88
+    );
+
+    head.position.y = 3.20;
+
+    head.castShadow = true;
+
+    avatarGroup.add(head);
+
+
+    /* =====================================================
+       ผม
+       ===================================================== */
+
+    const hair =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.36,
+                32,
+                20
+            ),
+            new THREE.MeshStandardMaterial({
+                color: 0x241b18,
+                roughness: 0.8
+            })
+        );
+
+    hair.scale.set(
+        1,
+        0.62,
+        1
+    );
+
+    hair.position.y = 3.42;
+
+    avatarGroup.add(hair);
+
+
+    /* =====================================================
+       ตา
+       ===================================================== */
+
+    createEye(
+        avatarGroup,
+        -0.12,
+        3.24,
+        0.31
+    );
+
+    createEye(
+        avatarGroup,
+        0.12,
+        3.24,
+        0.31
+    );
+
+
+    /* =====================================================
+       จมูก
+       ===================================================== */
+
+    const nose =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.035,
+                12,
+                12
+            ),
+            skin
+        );
+
+    nose.position.set(
+        0,
+        3.13,
+        0.33
+    );
+
+    avatarGroup.add(nose);
+
+
+    /* =====================================================
+       สะโพก
+       ===================================================== */
+
+    const hips =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.48,
+                32,
+                24
+            ),
+            skin
+        );
+
+    hips.scale.set(
+        1.0,
+        0.62,
+        0.60
+    );
+
+    hips.position.y = 1.30;
+
+    avatarGroup.add(hips);
+
+
+    /* =====================================================
+       แขน
+       ===================================================== */
+
+    const leftArm =
+        createArm('left');
+
+    const rightArm =
+        createArm('right');
+
+    avatarGroup.add(leftArm);
+    avatarGroup.add(rightArm);
+
+
+    /* =====================================================
+       ขา
+       ===================================================== */
+
+    const leftLeg =
+        createLeg('left');
+
+    const rightLeg =
+        createLeg('right');
+
+    avatarGroup.add(leftLeg);
+    avatarGroup.add(rightLeg);
+
+
+    /* =====================================================
+       เสื้อ
+       ===================================================== */
+
+    const itemType =
+        document.getElementById(
+            'item-type-select'
+        )?.value || 'full';
+
+
+    const fabric =
+        document.getElementById(
+            'fabric-select'
+        );
+
+
+    const selectedFabric =
+        fabric
+            ? fabric.options[
+                fabric.selectedIndex
+            ]
+            : null;
+
+
+    const fabricName =
+        selectedFabric
+            ? selectedFabric.text
+            : '';
+
+
+    let shirtColor =
+        new THREE.Color(
+            selectedColorHex
+        );
+
+
+    /* ผ้ายีนส์ทำให้ดูเข้มขึ้นเล็กน้อย */
+
+    if (
+        fabricName
+            .toLowerCase()
+            .includes('denim')
+    ) {
+
+        shirtColor.multiplyScalar(0.82);
+
+    }
+
+
+    const shirtMaterial =
+        new THREE.MeshStandardMaterial({
+            color: shirtColor,
+            roughness:
+                fabricName
+                    .toLowerCase()
+                    .includes('satin')
+                    ? 0.25
+                    : 0.7,
+            metalness:
+                fabricName
+                    .toLowerCase()
+                    .includes('satin')
+                    ? 0.08
+                    : 0
+        });
+
+
+    if (
+        itemType === 'full' ||
+        itemType === 'shirt'
+    ) {
+
+        shirtMesh =
+            createShirtModel(
+                shirtMaterial,
+                1
+            );
+
+        avatarGroup.add(
+            shirtMesh
+        );
+
+    }
+
+
+    /* =====================================================
+       กางเกง
+       ===================================================== */
+
+    if (
+        itemType === 'full' ||
+        itemType === 'pants'
+    ) {
+
+        const pantsMaterial =
+            new THREE.MeshStandardMaterial({
+                color: 0x242424,
+                roughness: 0.75
+            });
+
+        pantsMesh =
+            createPantsModel(
+                pantsMaterial,
+                1
+            );
+
+        avatarGroup.add(
+            pantsMesh
+        );
+
+    }
+
+
+    /* =====================================================
+       กระดุม
+       ===================================================== */
+
+    buttonsGroup =
+        new THREE.Group();
+
+    avatarGroup.add(
+        buttonsGroup
+    );
+
+    renderButtons();
+
+
+    /* =====================================================
+       ปรับขนาดหุ่น
+       ===================================================== */
+
+    updateAvatarShape();
+
+}
+
+
+/* =========================================================
+   11. ดวงตา
+   ========================================================= */
+
+function createEye(
+    group,
+    x,
+    y,
+    z
+) {
+
+    const eye =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.035,
+                16,
+                16
+            ),
+            new THREE.MeshStandardMaterial({
+                color: 0x222222
+            })
+        );
+
+    eye.position.set(
+        x,
+        y,
+        z
+    );
+
+    group.add(eye);
+}
+
+
+/* =========================================================
+   12. กระดุม
+   ========================================================= */
+
+function renderButtons() {
+
+    if (!buttonsGroup) return;
+
+
+    while (
+        buttonsGroup.children.length > 0
+    ) {
+
+        const child =
+            buttonsGroup.children[0];
+
+        buttonsGroup.remove(child);
+
+    }
+
+
+    const count =
+        parseInt(
+            document.getElementById(
+                'button-count'
+            )?.value || 0
+        );
+
+
+    if (count <= 0) return;
+
+
+    const color =
+        document.getElementById(
+            'button-color-picker'
+        )?.value || '#000000';
+
+
+    const material =
+        new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.35
+        });
+
+
+    for (
+        let i = 0;
+        i < count;
+        i++
+    ) {
+
+        const button =
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    0.045,
+                    16,
+                    16
+                ),
+                material
+            );
+
+
+        button.scale.z = 0.35;
+
+
+        const startY = 2.55;
+
+        const spacing =
+            count === 1
+                ? 0
+                : 0.75 /
+                  (count - 1);
+
+
+        button.position.set(
+            0,
+            startY -
+                i * spacing,
+            0.47
+        );
+
+
+        buttonsGroup.add(
+            button
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   13. อัปเดตโมเดลตามตัวเลือก
+   ========================================================= */
+
+function update3DFittingModel() {
+
+    if (!scene || !avatarGroup)
+        return;
+
+
+    build3DAvatarAndClothing();
+
+
+    /* อัปเดตราคา */
+
+    if (
+        typeof calculate3DPrice ===
+        'function'
+    ) {
+
+        calculate3DPrice();
+
+    }
+
+}
+
+
+/* =========================================================
+   14. ปรับรูปร่างตามส่วนสูง / รอบอก
+   ========================================================= */
+
+function updateAvatarShape() {
+
+    if (!avatarGroup) return;
+
+
+    const heightInput =
+        document.getElementById(
+            'body-height'
+        );
+
+    const chestInput =
+        document.getElementById(
+            'body-chest'
+        );
+
+
+    const height =
+        parseFloat(
+            heightInput?.value || 175
+        );
+
+
+    const chest =
+        parseFloat(
+            chestInput?.value || 38
+        );
+
+
+    /* ส่วนสูง 150 - 200 */
+
+    const heightScale =
+        THREE.MathUtils.clamp(
+            height / 175,
+            0.86,
+            1.14
+        );
+
+
+    /* รอบอก 30 - 50 */
+
+    const chestScale =
+        THREE.MathUtils.clamp(
+            chest / 38,
+            0.82,
+            1.25
+        );
+
+
+    avatarGroup.scale.set(
+        chestScale,
+        heightScale,
+        chestScale
+    );
+
+}
+
+
+/* =========================================================
+   15. เลือกสีเสื้อ
+   ========================================================= */
+
+function select3DColor(
+    element,
+    name,
+    hex
+) {
+
+    document
+        .querySelectorAll(
+            '.color-circle'
+        )
+        .forEach(
+            c =>
+                c.classList.remove(
+                    'selected'
+                )
+        );
+
+
+    if (element) {
+
+        element.classList.add(
+            'selected'
+        );
+
+    }
+
+
+    selectedColorHex = hex;
+
+    selectedColorName = name;
+
+
+    const nameElement =
+        document.getElementById(
+            'selected-color-name'
+        );
+
+    if (nameElement) {
+
+        nameElement.innerText =
+            name;
+
+    }
+
+
+    const picker =
+        document.getElementById(
+            'custom-color-picker'
+        );
+
+    if (picker) {
+
+        picker.value = hex;
+
+    }
+
+
+    update3DFittingModel();
+
+}
+
+
+/* =========================================================
+   16. สีที่กำหนดเอง
+   ========================================================= */
+
+function customColorPicked(hex) {
+
+    selectedColorHex = hex;
+
+    selectedColorName =
+        'กำหนดเอง';
+
+
+    const nameElement =
+        document.getElementById(
+            'selected-color-name'
+        );
+
+    if (nameElement) {
+
+        nameElement.innerText =
+            'กำหนดเอง';
+
+    }
+
+
+    update3DFittingModel();
+
+}
+
+
+/* =========================================================
+   17. Animation
+   ========================================================= */
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    if (controls) {
+
+        controls.update();
+
+    }
+
+
+    if (
+        renderer &&
+        scene &&
+        camera
+    ) {
+
+        renderer.render(
+            scene,
+            camera
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   18. Resize
+   ========================================================= */
+
+function onWindowResize() {
+
+    const container =
+        document.querySelector(
+            '.canvas-3d-wrapper'
+        );
+
+
+    if (
+        !container ||
+        !renderer ||
+        !camera
+    ) {
+
+        return;
+
+    }
+
+
+    camera.aspect =
+        container.clientWidth /
+        container.clientHeight;
+
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+        container.clientWidth,
+        container.clientHeight
+    );
+
+}
+
+
+/* =========================================================
+   19. แสดง/ซ่อนส่วนเสื้อกางเกง
+   ========================================================= */
+
+function toggleCutTypeUI() {
+
+    const itemType =
+        document.getElementById(
+            'item-type-select'
+        )?.value;
+
+
+    const shirtGroup =
+        document.getElementById(
+            'shirt-parts-group'
+        );
+
+
+    const pantsGroup =
+        document.getElementById(
+            'pants-price-group'
+        );
+
+
+    if (!shirtGroup ||
+        !pantsGroup) {
+
+        update3DFittingModel();
+
+        return;
+
+    }
+
+
+    if (itemType === 'full') {
+
+        shirtGroup.style.display =
+            'block';
+
+        pantsGroup.style.display =
+            'block';
+
+    }
+
+    else if (
+        itemType === 'shirt'
+    ) {
+
+        shirtGroup.style.display =
+            'block';
+
+        pantsGroup.style.display =
+            'none';
+
+    }
+
+    else if (
+        itemType === 'pants'
+    ) {
+
+        shirtGroup.style.display =
+            'none';
+
+        pantsGroup.style.display =
+            'block';
+
+    }
+
+
+    update3DFittingModel();
+
+}
+
+
+/* =========================================================
+   20. คำนวณราคา
+   ========================================================= */
+
+function calculate3DPrice() {
+
+    const itemType =
+        document.getElementById(
+            'item-type-select'
+        )?.value || 'full';
+
+
+    const fabricSelect =
+        document.getElementById(
+            'fabric-select'
+        );
+
+
+    const fabricPrice =
+        parseInt(
+            fabricSelect
+                ?.options[
+                    fabricSelect.selectedIndex
+                ]
+                ?.getAttribute(
+                    'data-price'
+                )
+        ) || 200;
+
+
+    const pantsPrice =
+        parseInt(
+            document.getElementById(
+                'pants-style-select'
+            )?.value || 250
+        );
+
+
+    const btnCount =
+        parseInt(
+            document.getElementById(
+                'button-count'
+            )?.value || 0
+        );
+
+
+    const hasZip =
+        document.getElementById(
+            'zip-option'
+        )?.checked || false;
+
+
+    const qty =
+        parseInt(
+            document.getElementById(
+                'custom-quantity'
+            )?.value || 1
+        );
+
+
+    let unitPrice = 0;
+
+
+    if (
+        itemType === 'full'
+    ) {
+
+        unitPrice =
+            fabricPrice +
+            pantsPrice;
+
+    }
+
+    else if (
+        itemType === 'shirt'
+    ) {
+
+        unitPrice =
+            fabricPrice;
+
+    }
+
+    else if (
+        itemType === 'pants'
+    ) {
+
+        unitPrice =
+            pantsPrice;
+
+    }
+
+
+    unitPrice +=
+        btnCount * 4;
+
+
+    if (hasZip) {
+
+        unitPrice += 12;
+
+    }
+
+
+    const total =
+        unitPrice * qty;
+
+
+    const unitLabel =
+        document.getElementById(
+            'unit-price-label'
+        );
+
+    const totalLabel =
+        document.getElementById(
+            '3d-calculated-price'
+        );
+
+
+    if (unitLabel) {
+
+        unitLabel.innerText =
+            unitPrice;
+
+    }
+
+
+    if (totalLabel) {
+
+        totalLabel.innerText =
+            total + ' บาท';
+
+    }
+
+
+    return {
+        unitPrice,
+        total,
+        qty
+    };
+
+}
+
+
+/* =========================================================
+   21. AI ออกแบบเสื้อ
+   ========================================================= */
+
+function generateAI3DShirt() {
+
+    const input =
+        document.getElementById(
+            'ai-prompt-input'
+        );
+
+
+    const prompt =
+        input?.value
+            ?.trim()
+            .toLowerCase() || '';
+
+
+    if (!prompt) {
+
+        alert(
+            'กรุณากรอกสไตล์ที่ต้องการ'
+        );
+
+        return;
+
+    }
+
+
+    /*
+       ระบบนี้เป็น AI แบบจำลอง
+       ตรวจคำสั่งแล้วเปลี่ยนค่าของโมเดล
+    */
+
+
+    /* สี */
+
+    if (
+        prompt.includes('แดง') ||
+        prompt.includes('red')
+    ) {
+
+        selectedColorHex =
+            '#ef4444';
+
+        selectedColorName =
+            'แดง';
+
+    }
+
+    else if (
+        prompt.includes('ดำ') ||
+        prompt.includes('black')
+    ) {
+
+        selectedColorHex =
+            '#111111';
+
+        selectedColorName =
+            'ดำ';
+
+    }
+
+    else if (
+        prompt.includes('ขาว') ||
+        prompt.includes('white')
+    ) {
+
+        selectedColorHex =
+            '#ffffff';
+
+        selectedColorName =
+            'ขาว';
+
+    }
+
+    else if (
+        prompt.includes('ชมพู') ||
+        prompt.includes('pink')
+    ) {
+
+        selectedColorHex =
+            '#f9a8d4';
+
+        selectedColorName =
+            'ชมพู';
+
+    }
+
+    else if (
+        prompt.includes('ฟ้า') ||
+        prompt.includes('blue')
+    ) {
+
+        selectedColorHex =
+            '#60a5fa';
+
+        selectedColorName =
+            'ฟ้า';
+
+    }
+
+    else if (
+        prompt.includes('เขียว') ||
+        prompt.includes('green')
+    ) {
+
+        selectedColorHex =
+            '#10b981';
+
+        selectedColorName =
+            'เขียว';
+
+    }
+
+
+    /* แขน */
+
+    const sleeve =
+        document.getElementById(
+            'sleeve-style'
+        );
+
+
+    if (sleeve) {
+
+        if (
+            prompt.includes(
+                'แขนยาว'
+            ) ||
+            prompt.includes(
+                'long sleeve'
+            )
+        ) {
+
+            sleeve.value =
+                'long';
+
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
+        else if (
+            prompt.includes(
+                'แขนกุด'
+            ) ||
+            prompt.includes(
+                'sleeveless'
+            )
+        ) {
+
+            sleeve.value =
+                'sleeveless';
+
         }
 
-        // --- 8. Live Chat System ---
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            if (!message) return;
+        else {
 
-            const list = document.getElementById('chat-messages-list');
-            list.insertAdjacentHTML('beforeend', `<div class="chat-message user">${message}<div class="chat-time">เมื่อสักครู่</div></div>`);
-            input.value = '';
-            list.scrollTop = list.scrollHeight;
+            sleeve.value =
+                'short';
 
-            setTimeout(() => {
-                list.insertAdjacentHTML('beforeend', `<div class="chat-message admin">รับทราบครับ! แอดมิน JY ยินดีให้บริการคำตอบเกี่ยวกับ "${message}" ครับ<div class="chat-time">เมื่อสักครู่</div></div>`);
-                list.scrollTop = list.scrollHeight;
-            }, 1000);
         }
 
-        function sendAdminReply() {
-            const input = document.getElementById('admin-reply-input');
-            const msg = input.value.trim();
-            if (!msg) return;
+    }
 
-            const list = document.getElementById('chat-messages-list');
-            list.insertAdjacentHTML('beforeend', `<div class="chat-message admin">${msg}<div class="chat-time">แอดมินตอบกลับ</div></div>`);
-            input.value = '';
-            alert('ส่งข้อความตอบกลับลูกค้าเรียบร้อยแล้ว');
+
+    /* คอ */
+
+    const collar =
+        document.getElementById(
+            'collar-style'
+        );
+
+
+    if (collar) {
+
+        if (
+            prompt.includes(
+                'คอวี'
+            ) ||
+            prompt.includes(
+                'v-neck'
+            )
+        ) {
+
+            collar.value =
+                'vneck';
+
         }
 
-        // --- 9. Initialize App ---
-        window.onload = () => {
-            init3D();
-            toggleCutTypeUI();
-            renderAddresses();
-        };
-    </script>
-</body>
-</html>
+        else if (
+            prompt.includes(
+                'โปโล'
+            ) ||
+            prompt.includes(
+                'polo'
+            )
+        ) {
+
+            collar.value =
+                'polo';
+
+        }
+
+        else {
+
+            collar.value =
+                'round';
+
+        }
+
+    }
+
+
+    const nameElement =
+        document.getElementById(
+            'selected-color-name'
+        );
+
+
+    if (nameElement) {
+
+        nameElement.innerText =
+            selectedColorName;
+
+    }
+
+
+    const picker =
+        document.getElementById(
+            'custom-color-picker'
+        );
+
+
+    if (picker) {
+
+        picker.value =
+            selectedColorHex;
+
+    }
+
+
+    update3DFittingModel();
+
+
+    alert(
+        'สร้างแบบ 3D ตามคำสั่งเรียบร้อยแล้ว'
+    );
+
+}
+
+
+/* =========================================================
+   22. เริ่มระบบหลังหน้าเว็บโหลด
+   ========================================================= */
+
+window.addEventListener(
+    'load',
+    function() {
+
+        setTimeout(
+            function() {
+
+                init3D();
+
+                if (
+                    typeof toggleCutTypeUI ===
+                    'function'
+                ) {
+
+                    toggleCutTypeUI();
+
+                }
+
+            },
+            300
+        );
+
+    }
+);
+
+</script>
